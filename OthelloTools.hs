@@ -185,4 +185,5 @@ instance Read GameState where
                              ((board,rest''):[]) = (readsPrec 0 rest') :: [(Board,String)]
                              result = GameState play board
                          in  [(result, rest'')]
+                         
 
