@@ -1,8 +1,8 @@
 import Debug.Trace 
 import Control.Monad.Trans.State.Lazy
-import Data.Maybe (fromJust, isNothing)
+import Data.Maybe 
 import System.Random
-import Data.List ((\\))
+import Data.List
 import System.Environment
 import System.IO.Unsafe
 import Data.Either
