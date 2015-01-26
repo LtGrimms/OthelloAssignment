@@ -114,20 +114,3 @@ replace xs n elem = let (ys,zs) = splitAt n xs
 -- | Replaces the (x,y)th element in a list of lists with a new element.
 replace2        :: [[a]] -> (Int,Int) -> a -> [[a]]
 replace2 xs (x,y) elem = replace xs y (replace (xs !! y) x elem)
-
-<<<<<<< HEAD
---Strategy common functions----------------------------------------------------------
-
--- | Takes in a Player and a Board and finds all valid moves for that player as [(x,y)]
-validMoves      :: Player -> Board -> [(Int,Int)]
-  -- needs to be written
-  
--- | Takes in a board and the most recently played piece and returns a board with flipped pieces
-captureCells    :: Board -> (Int,Int) -> Board
-
-
-
-
-=======
--- this is a tes
->>>>>>> b01e194210334b1270697110676023354d234d5a
