@@ -1,8 +1,8 @@
 import Debug.Trace 
 import Control.Monad.Trans.State.Lazy
-import Data.Maybe (fromJust, isNothing)
+import Data.Maybe 
 import System.Random
-import Data.List ((\\))
+import Data.List
 import System.Environment
 import System.IO.Unsafe
 import Data.Either
@@ -33,6 +33,17 @@ main = main' (unsafePerformIO getArgs)
 -}
 main'           :: [String] -> IO()
 main' args = do
+    argument	<-	getArgs
+    
+    let inputChecking a =
+	    if length argument /= 2
+	        then putStrLn "The number of arguments are incorrect"
+	    else 
+	        putStrLn "The correct number of args"
+	        
+    inputChecking argument
+       
+    putStrLn ("You gave " ++ show (length args) ++ " arguments")
     putStrLn "\nThe initial board:"
     print initBoard
     
