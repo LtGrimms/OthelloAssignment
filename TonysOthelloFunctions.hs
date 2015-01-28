@@ -1,16 +1,19 @@
---| validMoves 
--{ this function needs to take in a player and a board and return that players valid moves as a list of pairs (Int, Int) }-
+import Othello
+import OthelloTools
+
+-- | validMoves 
+{- this function needs to take in a player and a board and return that players valid moves as a list of pairs (Int, Int) -}
 
 validMoves    :: GamesState -> (Int, Int)
 
---| captureCells  
--{ this function needs to take in a row of cells and a pair representing the most recently placed piece and return the row with cells caputred }-
+-- | captureCells  
+{- this function needs to take in a row of cells and a pair representing the most recently placed piece and return the row with cells caputred -}
 
 captureCells  :: [Cell] -> (Int, Int) -> [Cell]
 
 
---| rotate45CCW
---| rotates the board 45deg counter clockwise
+-- | rotate45CCW
+-- | rotates the board 45deg counter clockwise
 
 rotate45CCW   :: [[a]] -> [[a]]
 rotate45CCW [[a1, a2, a3 ,a4, a5, a6, a7, a8],
@@ -37,7 +40,7 @@ rotate45CCW [[a1, a2, a3 ,a4, a5, a6, a7, a8],
              [g1, h2],
              [h1]]
 
---| rotate45CW
+-- | rotate45CW
 -- this function should only be used to move an already rotated board back to its original pos.
 
 rotate45CW    :: [[a]] -> [[a]]
