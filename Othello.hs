@@ -7,6 +7,7 @@ import System.Environment
 import System.IO.Unsafe
 import Data.Either
 import OthelloTools
+import TonysOthelloFunctions
 
 {- | This program is used as a template for the CPSC 449  Othello assignment.
 
