@@ -9,6 +9,7 @@ import Data.Either
 import OthelloTools
 import TonysOthelloFunctions
 
+
 {- | This program is used as a template for the CPSC 449  Othello assignment.
 
 Feel free to modify this file as you see fit.
@@ -163,7 +164,7 @@ rotate45CCW [[a8],
 
 -- | rotate45CW
 -- this function should only be used to move an already rotated board back to its original pos.
-
+{--
 rotate45CW    :: [[a]] -> [[a]]
 rotate45CW [[a8],
             [a7, b8],
@@ -211,7 +212,7 @@ rotate45CW  [[a8, b8, c8, d8, e8, f8, g8, h8],
              [e1, f2, g3, h4],
              [f1, g2, h3],
              [g1, h2],
-             [h1]]       
+             [h1]]       --}
 -- | These functions return a rotated point the same as the board rotations above.
 type PointRotation = (Int,Int) -> (Int,Int)
 
@@ -229,3 +230,14 @@ replace xs n elem = let (ys,zs) = splitAt n xs
 -- | Replaces the (x,y)th element in a list of lists with a new element.
 replace2        :: [[a]] -> (Int,Int) -> a -> [[a]]
 replace2 xs (x,y) elem = replace xs y (replace (xs !! y) x elem)
+{--
+playMove :: GameState -> (Int, Int) -> GameState
+playMove gs mv
+         newBoard = replace2 board mv
+	 --flip the other cells
+         where board = theBoard gs
+--}
+{--
+rotateX :: [[a]]-> Int -> [[a]]
+rotateX board 0 = board
+rotateX board x = rotateX (rotate45CW board (x-1))--}
