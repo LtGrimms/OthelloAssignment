@@ -36,14 +36,15 @@ main = main' (unsafePerformIO getArgs)
 -}
 main'           :: [String] -> IO()
 main' args = do
+--taking arguments from command land
     argument	<-	getArgs
     
     let inputChecking a =
-	    if length argument /= 2
+	    if length argument /= 2 -- if the user did not enter any arguments go to interactive mode
 	        then do 
 	            putStrLn "The number of arguments are incorrect"
 	            putStrLn "  reallyStupidStrategy\n"
-	            strategy	<- getLine
+	            strategy	<- getLine --getting user input
 	            putStrLn ("The strategies you pick are: " ++ strategy)
 	    else 
 	        putStrLn "The correct number of args"
@@ -75,6 +76,8 @@ type Chooser = GameState -> Cell -> Maybe (Int,Int)
 reallyStupidStrategy  :: Chooser
 reallyStupidStrategy b c = Just (0,0)
 
+jasonStrategy	:: Chooser
+jasonStrategy b c = Just (0,0)
 
 ---Board rotations-------------------------------------------------------------
 
