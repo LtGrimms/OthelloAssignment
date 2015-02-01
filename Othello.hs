@@ -44,8 +44,12 @@ main' args = do
 	        then do 
 	            putStrLn "The number of arguments are incorrect"
 	            putStrLn "  reallyStupidStrategy\n"
-	            strategy	<- getLine --getting user input
-	            putStrLn ("The strategies you pick are: " ++ strategy)
+	            putStrLn "  jasonStrategy\n"
+	            putStrLn "Please enter strategy 1 \n"
+	            strategy1	<- getLine --getting user input
+	            putStrLn "Please enter strategy 2 \n"
+	            strategy2	<- getLine --getting user input
+	            putStrLn ("The strategies you pick are: " ++ strategy1 ++ " " ++ strategy2)
 	    else 
 	        putStrLn "The correct number of args"
 	        
