@@ -47,9 +47,10 @@ fsmMemManage :: State -> [(Int, Int, Int)]
 fsmMemManage (x, y, z, a, mem) = compress mem
     where compress :: [(Int, Int, Int)] -> [(Int, Int, Int)]
           compress [] = []
+          compress (x:[]) = (x:[])
           compress (x:xs:xss)
             | (first x) == (first xs) = (x `merge` xs) : compress xss
-            | otherwise = (x : xs : (compress xss))
+            | otherwise = (x : (compress (xs:xss)))
 
 merge :: (Int, Int, Int) -> (Int, Int, Int) -> (Int, Int, Int)
 merge (x1, x2, x3) (y1, y2, y3)
