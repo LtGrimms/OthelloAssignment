@@ -40,7 +40,11 @@ main' args = do
     
     let inputChecking a =
 	    if length argument /= 2
-	        then putStrLn "The number of arguments are incorrect"
+	        then do 
+	            putStrLn "The number of arguments are incorrect"
+	            putStrLn "  reallyStupidStrategy\n"
+	            strategy	<- getLine
+	            putStrLn ("The strategies you pick are: " ++ strategy)
 	    else 
 	        putStrLn "The correct number of args"
 	        
