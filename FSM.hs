@@ -13,9 +13,9 @@ findMoves x = map head (findMovesAndCaptures x)
 
 findMovesAndCaptures :: Board -> [[(Int, Int)]]
 findMovesAndCaptures [] = []
-findMovesAndCaptures (x:xs) = movesAndCapturesOnRow (length xs) (runFSML x) ++ findMovesAndCaptures xs
+findMovesAndCaptures (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML x) ++ findMovesAndCaptures xs
 
---This might be usefull in speeding things up if you make it without making calls to moves and captures
+--This might be usefull in speeding things up if you make it without making calls to movesandcaptures
 validMovesOnRow :: [[(Int, Int)]] -> [(Int,Int)]
 validMovesOnRow [] = []
 validMovesOnRow (x:xs) = head x : validMovesOnRow xs
