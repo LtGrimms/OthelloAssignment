@@ -2,6 +2,35 @@ module FSM where
 
 import OthelloTools
 
+------------------------Running FSM on a board-----------------------------
+
+--validMovesOnBoard :: Board -> [(Int, Int)]
+-- can't write this yet since we will need the unrotate function
+
+findMoves :: Board -> [(Int, Int)]
+findMoves [] = []
+findMoves x = map head (findMovesAndCaptures x)
+
+findMovesAndCaptures :: Board -> [[(Int, Int)]]
+findMovesAndCaptures [] = []
+findMovesAndCaptures (x:xs) = movesAndCapturesOnRow (length xs) (runFSML x) ++ findMovesAndCaptures xs
+
+--This might be usefull in speeding things up if you make it without making calls to moves and captures
+validMovesOnRow :: [[(Int, Int)]] -> [(Int,Int)]
+validMovesOnRow [] = []
+validMovesOnRow (x:xs) = head x : validMovesOnRow xs
+
+movesAndCapturesOnRow :: Int -> [(Int, Int, Int)] -> [[(Int, Int)]]
+movesAndCapturesOnRow _ [] = []
+movesAndCapturesOnRow x (y:ys) = (makeSetofCaptures x y True) : movesAndCapturesOnRow x ys
+    where makeSetofCaptures :: Int -> (Int, Int, Int) -> Bool -> [(Int, Int)]
+          makeSetofCaptures row (col, right, left) first
+            | first = (col, row) : makeSetofCaptures row (col, right, left) False
+            | (left + right) == 0 = []
+            | left == 0 = (col + right, row) : makeSetofCaptures row (col, pred right, 0) False
+            | right == 0 = (col - left, row) : makeSetofCaptures row (col, 0, pred left) False
+            | otherwise = (col - left, row) : (col + right, row) : makeSetofCaptures row (col, pred right, pred left) False
+
 ----------------------------------FSM--------------------------------------
 
 type State = (Int, (Int, Int), Int, (Int,Int), [(Int, Int, Int)])
@@ -71,11 +100,3 @@ fsml x y = fsm y x
 runFSML  :: [Cell] -> [(Int, Int, Int)]
 runFSML row = fsmMemManage (foldl fsml (-1, (0,0), -1, (0,0), []) row)
 
---------MemoryExtraction
-
-extractMoves :: State -> [Int]
-extractMoves (_, _, _, _, []) = []
-extractMoves (a, b, c, d, x:xs) = moveFromMem x : extractMoves (a, b, c, d, xs)
-
-moveFromMem :: (Int, Int, Int) -> Int
-moveFromMem (col, _, _) = col
