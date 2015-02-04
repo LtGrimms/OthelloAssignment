@@ -36,9 +36,12 @@ main = main' (unsafePerformIO getArgs)
 -}
 main'           :: [String] -> IO()
 main' args = do
+--preparing to randomize the strategy
+    let randomize = randomRIO (0, 8) :: IO Int
+    r1 <- randomize 
+    r2 <- randomize
 --taking arguments from command land
     argument	<-	getArgs
-    
     let inputChecking a =
 	    if length argument /= 2 -- if the user did not enter any arguments go to interactive mode
 	        then do 
