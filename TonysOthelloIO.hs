@@ -72,10 +72,14 @@ strategy2Chooser :: Strategy -> Chooser
 strategy2Chooser Stupid = reallyStupidStrategy
 strategy2Chooser Greedy = greedy
 
+strn2Chooser :: String -> Chooser
+strn2Chooser s = strategy2Chooser (strn2Strategy s)
+
 putStrategy     :: Strategy -> IO()
 putStrategy s = putStr (strategy2Strn s)
 
 ---------------------Playing the game functions--------------------
+----------------------Don't put IO in these------------------------
 
 placePiece :: (Int, Int) -> Board -> Cell -> Board
 placePiece mv b p = replace2 b ((fst mv - 1), (8 - snd mv)) p
@@ -93,9 +97,28 @@ playedBy Black = B
 newPlayed :: [Maybe (Int, Int)] -> Played
 newPlayed moves = Played (maybe (0,0) (\x -> x) (head moves))
 
+unmaybe :: Maybe (Int, Int) -> (Int, Int)
+unmaybe = maybe (0, 0) (\y -> y)
+
+unMaybe :: [Maybe (Int, Int)] -> [(Int, Int)]
+unMaybe = map unmaybe
+
 nextGamestate :: Chooser -> GameState -> GameState
 nextGamestate c (GameState {play = p, theBoard = b}) =
   GameState (invertPlayer (fst p), (newPlayed (c (GameState p b) (playedBy (fst p))))) (playMove (c (GameState p b) (playedBy (fst p))) (b) (playedBy (fst p)))
+
+{-
+firstMove :: Chooser -> GameState -> GameState
+firstMove c (GameState {play = p, theBoard = b}) =
+  GameState ((fst p), (newPlayed (c (GameState p b) (playedBy (fst p))))) (playMove (c (GameState p b) (playedBy (fst p))) (b) (playedBy (fst p)))
+-}
+
+firstMove :: Chooser -> GameState -> GameState
+firstMove c (GameState {play = p, theBoard = b}) =
+  GameState ((fst p), (newPlayed (setOfMoves))) (playMove (setOfMoves) (b) (playedBy (fst p)))
+
+  where
+    setOfMoves = c (GameState p b) (playedBy (fst p))
 
 -----------------------------main----------------------------------
 
@@ -106,9 +129,9 @@ main = do
   let inputChecking a =
 	  if (strn2Strategy a /= DoesNotExist)
         then putStr ("valid Strategy " ++ a ++ " selected\n")
-	  else do
-        putStr "invalid Strategy\n"
-        return () -- why doesnt this quit the execution?
+	    else do
+          putStr "invalid Strategy\n"
+          return () -- why doesnt this quit the execution?
 
   s1 <- getLine
   inputChecking s1
@@ -117,19 +140,29 @@ main = do
   s2 <- getLine
   inputChecking s2
 
-  print (nextGamestate greedy initBoard)
+  print initBoard
+  print (firstMove (strn2Chooser s1) initBoard)
 
-  return ()
+  let playTheGame :: Chooser -> Chooser -> GameState -> IO ()
+      playTheGame active inactive (GameState {play = p, theBoard = b})
+        | (lastPlay == Passed) && (newSetOfMoves == []) = do
+                                                        print "Both players passed, game over"
+        | otherwise = do
+          print newGameState
+          playTheGame inactive active newGameState
 
-{-
-  let playTheGame :: Chooser -> Chooser -> Gamestate
-      playTheGame active inactive (GameState {play = p, board = b}) =
-        if (--the previous player passed and the active player must pass OR the previous player made an invalid move)
-          then --END THE GAME
-        else do
-          playMove (active (Gamestate p b) (getCell p))
-          playTheGame inactive active (-- can we get new gamestates by reading the last gamestate?)
+         where
+          lastPlayer = fst p
+          lastPlay = snd p
+          currentPlayer = invertPlayer (fst p)
+          newSetOfMoves = active (GameState p b) (playedBy currentPlayer)
+          newMove = head (unMaybe newSetOfMoves)
+          newGameState = GameState (currentPlayer, (Played newMove)) (playMove newSetOfMoves b (playedBy currentPlayer))
 
--}
+  playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
+
+
+
+
 
 
