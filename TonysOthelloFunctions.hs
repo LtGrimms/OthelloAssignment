@@ -5,6 +5,10 @@ module TonysOthelloFunctions where
 
 import OthelloTools
 
+
+
+{- Most of these functions are depreciated, the only usefull ones are the rotate functions -}
+
 -- | validMoves 
 {- this function needs to take in a player and a board and return that players valid moves as a list of pairs (Int, Int) -}
 validMoves    :: GameState -> [(Int, Int)]
