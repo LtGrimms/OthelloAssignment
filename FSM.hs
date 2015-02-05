@@ -1,5 +1,5 @@
 module FSM where
-
+import TonysOthelloFunctions (rotateX)
 import OthelloTools
 
 ------------------------Running FSM on a board-----------------------------
@@ -14,6 +14,12 @@ findMoves x = map head (findMovesAndCaptures x)
 findMovesAndCaptures :: Board -> [[(Int, Int)]]
 findMovesAndCaptures [] = []
 findMovesAndCaptures (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML x) ++ findMovesAndCaptures xs
+
+--findAllMovesAndCaptures returns all valid moves on the board as a triple nested list where the "lowest" list
+--contains a move and a list of pieces which that move will capture e.g. [[[move, captures ...]]] 
+--this may be better to give as a doubly nested list, the "middle" level of nesting is a holdover from the board rotations
+findAllMovesAndCaptures :: Board -> [[[(Int, Int)]]]
+findAllMovesAndCaptures board = [ map(map (`mapMoves` r))(findMovesAndCaptures (rotateX board r )) | r  <- [0,1,2,3]]
 
 --This might be usefull in speeding things up if you make it without making calls to movesandcaptures
 validMovesOnRow :: [[(Int, Int)]] -> [(Int,Int)]
@@ -30,6 +36,17 @@ movesAndCapturesOnRow x (y:ys) = (makeSetofCaptures x y True) : movesAndCaptures
             | left == 0 = (col + right, row) : makeSetofCaptures row (col, pred right, 0) False
             | right == 0 = (col - left, row) : makeSetofCaptures row (col, 0, pred left) False
             | otherwise = (col - left, row) : (col + right, row) : makeSetofCaptures row (col, pred right, pred left) False
+
+mapMoves :: (Int, Int) -> Int -> (Int, Int)
+mapMoves move 0 = move
+mapMoves (c,r) 1
+	 |(r <= 8) = (8-(r-c),c) 
+	 |otherwise = (c,(r-8)+c)
+mapMoves (c,r) 2 = (9-r, c)
+mapMoves (c,r) 3
+	 |(r <= 8) = (9-c, 8 -(r-c))
+	 |otherwise = (16-(r+c), c)	 
+
 
 ----------------------------------FSM--------------------------------------
 
