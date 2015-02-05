@@ -24,7 +24,7 @@ findMovesAndCaptures' (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML
 --contains a move and a list of pieces which that move will capture e.g. [[[move, captures ...]]] 
 --this may be better to give as a doubly nested list, the "middle" level of nesting is a holdover from the board rotations
 findAllMovesAndCaptures :: Board -> [[[(Int, Int)]]]
-findAllMovesAndCaptures board = [ map(map (`mapMoves` r))(findMovesAndCaptures (rotateX board r )) | r  <- [0,1,2,3]]
+findAllMovesAndCaptures board = [ map(map (`mapMoves` r))(findMovesAndCaptures' (rotateX board r )) | r  <- [0,1,2,3]]
 
 --This might be usefull in speeding things up if you make it without making calls to movesandcaptures
 validMovesOnRow :: [[(Int, Int)]] -> [(Int,Int)]
