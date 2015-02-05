@@ -9,11 +9,16 @@ import OthelloTools
 
 findMoves :: Board -> [(Int, Int)]
 findMoves [] = []
-findMoves x = map head (findMovesAndCaptures x)
+findMoves x = map head (findMovesAndCaptures' x)
 
-findMovesAndCaptures :: Board -> [[(Int, Int)]]
-findMovesAndCaptures [] = []
-findMovesAndCaptures (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML x) ++ findMovesAndCaptures xs
+findMovesAndCaptures :: Board -> Cell -> [[(Int, Int)]]
+findMovesAndCaptures b cell
+  | cell == W = findMovesAndCaptures' (invertBoardPieces b)
+  | otherwise = findMovesAndCaptures' b
+
+findMovesAndCaptures' :: Board -> [[(Int, Int)]]
+findMovesAndCaptures' [] = []
+findMovesAndCaptures' (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML x) ++ findMovesAndCaptures' xs
 
 --This might be usefull in speeding things up if you make it without making calls to movesandcaptures
 validMovesOnRow :: [[(Int, Int)]] -> [(Int,Int)]
@@ -30,6 +35,20 @@ movesAndCapturesOnRow x (y:ys) = (makeSetofCaptures x y True) : movesAndCaptures
             | left == 0 = (col + right, row) : makeSetofCaptures row (col, pred right, 0) False
             | right == 0 = (col - left, row) : makeSetofCaptures row (col, 0, pred left) False
             | otherwise = (col - left, row) : (col + right, row) : makeSetofCaptures row (col, pred right, pred left) False
+
+
+
+-- | invertBoardPieces
+{- takes a board and returns the board with every piece flipped -}
+invertBoardPieces :: Board -> Board
+invertBoardPieces [] = []
+invertBoardPieces (x:xs) = (invertRowPieces x) : (invertBoardPieces xs)
+
+-- | invertRowPieces
+{- subrutine of invertBoardPieces -}
+invertRowPieces :: [Cell] -> [Cell]
+invertRowPieces [] = []
+invertRowPieces (x:xs) = (otherCell x) : (invertRowPieces xs)
 
 ----------------------------------FSM--------------------------------------
 

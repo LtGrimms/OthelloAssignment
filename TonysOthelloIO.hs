@@ -18,7 +18,7 @@ reallyStupidStrategy b c = [Just(3,5), Just(4, 5)]
 
 -- | This is a sample greedy strategy
 greedy :: Chooser
-greedy (GameState {play = p, theBoard = b}) c = mapJust (maxCaptures (findMovesAndCaptures b))
+greedy (GameState {play = p, theBoard = b}) c = mapJust (maxCaptures (findMovesAndCaptures b c))
 
 maxCaptures :: [[(Int,Int)]] -> [(Int, Int)]
 maxCaptures moves = foldr findMax [] moves
@@ -94,8 +94,9 @@ playedBy :: Player -> Cell
 playedBy White = W
 playedBy Black = B
 
-newPlayed :: [Maybe (Int, Int)] -> Played
-newPlayed moves = Played (maybe (0,0) (\x -> x) (head moves))
+newPlayedFrom :: [Maybe (Int, Int)] -> Played
+newPlayedFrom [] = Passed
+newPlayedFrom moves = Played (maybe (0,0) (\x -> x) (head moves))
 
 unmaybe :: Maybe (Int, Int) -> (Int, Int)
 unmaybe = maybe (0, 0) (\y -> y)
@@ -103,22 +104,25 @@ unmaybe = maybe (0, 0) (\y -> y)
 unMaybe :: [Maybe (Int, Int)] -> [(Int, Int)]
 unMaybe = map unmaybe
 
+
 nextGamestate :: Chooser -> GameState -> GameState
 nextGamestate c (GameState {play = p, theBoard = b}) =
-  GameState (invertPlayer (fst p), (newPlayed (c (GameState p b) (playedBy (fst p))))) (playMove (c (GameState p b) (playedBy (fst p))) (b) (playedBy (fst p)))
-
-{-
-firstMove :: Chooser -> GameState -> GameState
-firstMove c (GameState {play = p, theBoard = b}) =
-  GameState ((fst p), (newPlayed (c (GameState p b) (playedBy (fst p))))) (playMove (c (GameState p b) (playedBy (fst p))) (b) (playedBy (fst p)))
--}
-
-firstMove :: Chooser -> GameState -> GameState
-firstMove c (GameState {play = p, theBoard = b}) =
-  GameState ((fst p), (newPlayed (setOfMoves))) (playMove (setOfMoves) (b) (playedBy (fst p)))
+  GameState (player, (newPlayedFrom setOfMoves)) (playMove setOfMoves b playerCell)
 
   where
-    setOfMoves = c (GameState p b) (playedBy (fst p))
+    player = invertPlayer (fst p)
+    playerCell = playedBy player
+    setOfMoves = c (GameState p b) playerCell
+
+
+firstMove :: Chooser -> GameState -> GameState
+firstMove c (GameState {play = p, theBoard = b}) =
+  GameState (player, (newPlayedFrom setOfMoves)) (playMove setOfMoves b playerCell)
+
+  where
+    player = fst p
+    playerCell = playedBy player
+    setOfMoves = c (GameState p b) playerCell
 
 -----------------------------main----------------------------------
 
@@ -154,10 +158,11 @@ main = do
          where
           lastPlayer = fst p
           lastPlay = snd p
+          currentGameState = GameState p b
           currentPlayer = invertPlayer (fst p)
           newSetOfMoves = active (GameState p b) (playedBy currentPlayer)
           newMove = head (unMaybe newSetOfMoves)
-          newGameState = GameState (currentPlayer, (Played newMove)) (playMove newSetOfMoves b (playedBy currentPlayer))
+          newGameState = nextGamestate active currentGameState
 
   playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
 
