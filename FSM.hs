@@ -33,11 +33,11 @@ findMovesAndCaptures' [] = []
 findMovesAndCaptures' (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML x) ++ findMovesAndCaptures' xs
 
 
--- | findAllMovesAndCaptures returns all valid moves on the board as a triple nested list where the "lowest" list
---   contains a move and a list of pieces which that move will capture e.g. [[[move, captures ...]]]
---   this may be better to give as a doubly nested list, the "middle" level of nesting is a holdover from the board rotations
-findAllMovesAndCaptures :: Board -> [[[(Int, Int)]]]
-findAllMovesAndCaptures board = [ map(map (`mapMoves` r))(findMovesAndCaptures' (rotateX board r )) | r  <- [0,1,2,3]]
+-- | findAllMovesAndCaptures returns all valid moves on the board as a double nested list where the "lowest" list
+--   contains a move and a list of pieces which that move will capture e.g. [[move, captures ...]]
+
+findAllMovesAndCaptures :: Board -> [[(Int, Int)]]
+findAllMovesAndCaptures board = [elem| perm<-[ map(map (`mapMoves` r))(findMovesAndCaptures' (rotateX board r )) | r  <- [0,1,2,3]], elem<-perm]
 
 -- | This is currently not used in any other functions or the execution of the main program
 --   This might be usefull in speeding things up if you make it without making calls to movesandcaptures
