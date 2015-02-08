@@ -94,17 +94,21 @@ reallyStupidStrategy b c = Just (0,0)
 
 {- |Strategy to pick the first valid move in the list
 	Uses code from Tony's greedy strategy to cast the move as a Just move
-	
-pickFirst :: Chooser
+
+pickFirst :: Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 pickFirst (GameState {play = p, theBoard = b}) c = mapJust (head (head (findMovesAndCaptures b c)))
 
-
-randomStrategy :: Int -> Chooser
+--	|Random strategy that chooses a random move contained from all valid moves
+randomStrategy :: Int -- ^ Takes in an Int representing the random number
+				-> Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 randomStrategy random (GameState {play = p, theBoard = b}) c = mapJust (pickRandom (findMovesAndCaptures b c))
 
 -}
 
-pickRandom :: [[(Int,Int)]] -> Int -> [(Int,Int)]
+--	|Used to pick a random move from the total set of valid moves
+pickRandom :: [[(Int,Int)]] -- ^ Takes in a set of a set of pairs from FindMovesAndCaptures, represents all valid moves
+			-> Int -- ^ Takes in the random number as an Int
+			-> [(Int,Int)] -- ^ Returns a chosen move as well as captures from that move
 pickRandom list rand = list !! (rand `mod` ((length list) - 1))
 
 
@@ -284,22 +288,22 @@ rotateX board x = rotateX (rotate45CW board (x-1))--}
 
 ---Flipping Functions -------------------------
 
--- Used to flip a single cell
-flip' :: Board -- Takes in the current board
-		-> (Int,Int) -- Takes in the coordinate of the piece you want to flip
-		-> Cell -- Takes in the player
-		-> Board -- Returns the new board
+--	|Used to flip a single cell
+flip' :: Board -- ^ Takes in the current board
+		-> (Int,Int) -- ^ Takes in the coordinate of the piece you want to flip
+		-> Cell -- ^ Takes in the player
+		-> Board -- ^ Returns the new board
 flip' board pt player = replace2 board (convert pt) player
 
 
---have to pass in the tail of the validMovesAndCaptures
-flipList :: Board -- Takes in the current board
-		-> [(Int,Int)] -- Takes in a list of coordinates to flip
-		-> Cell -- Takes in the player
-		-> Board -- Returns the new board
+--	|Have to pass in the tail of the validMovesAndCaptures
+flipList :: Board -- ^ Takes in the current board
+		-> [(Int,Int)] -- ^ Takes in a list of coordinates to flip
+		-> Cell -- ^ Takes in a player
+		-> Board -- ^ Returns the new board
 flipList a (x:xs) player = flipList (flip' a x player) xs player
 
---Have to convert between the coordinates returned by findMovesAndCaptures in order to use the replace function
-
-convert :: (Int,Int) -> (Int,Int)
+--	|Have to convert between the coordinates returned by findMovesAndCaptures in order to use the replace function
+convert :: (Int,Int) -- ^ Takes in a pair which represents the initial cooridnates
+		-> (Int,Int) -- ^ Returns the converted pair
 convert x = (((snd x) - 1), (abs ((fst x) - 8)))
