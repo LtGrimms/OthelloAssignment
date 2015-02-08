@@ -36,10 +36,15 @@ main = main' (unsafePerformIO getArgs)
 -}
 main'           :: [String] -> IO()
 main' args = do
---preparing to randomize the strategy
+{-preparing to randomize the strategy
     let randomize = randomRIO (0, 8) :: IO Int
     r1 <- randomize 
     r2 <- randomize
+	-}
+{-seeding random number generator
+	g <- getStdGen
+	let x = randoms g :: [Int]
+	-}
 --taking arguments from command land
     argument	<-	getArgs
     let inputChecking a =
@@ -58,6 +63,10 @@ main' args = do
 	        
     inputChecking argument
        
+--seeding random number generator
+	g <- getStdGen
+	let x = randoms g :: [Int]
+	
     putStrLn ("You gave " ++ show (length args) ++ " arguments")
     putStrLn "\nThe initial board:"
     print initBoard
@@ -88,9 +97,15 @@ reallyStupidStrategy b c = Just (0,0)
 	
 pickFirst :: Chooser
 pickFirst (GameState {play = p, theBoard = b}) c = mapJust (head (head (findMovesAndCaptures b c)))
+
+
+randomStrategy :: Int -> Chooser
+randomStrategy random (GameState {play = p, theBoard = b}) c = mapJust (pickRandom (findMovesAndCaptures b c))
+
 -}
 
-
+pickRandom :: [[(Int,Int)]] -> Int -> [(Int,Int)]
+pickRandom list rand = list !! (rand `mod` ((length list) - 1))
 
 
 jasonStrategy	:: Chooser
