@@ -100,15 +100,17 @@ pickFirst :: Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 pickFirst (GameState {play = p, theBoard = b}) c
 	|length (findAllMovesAndCaptures b) == 0 && c == B = []
 	|length (findAllMovesAndCaptures b) /= 0 && c == B = mapJust (head (findAllMovesAndCaptures b))
-	|length (findAllMovesAndCaptures (invertBoardPieces(b))) == 0 && c == W = []
-	|length (findAllMovesAndCaptures (invertBoardPieces(b))) /= 0 && c == W = mapJust (head (findAllMovesAndCaptures (invertBoardPieces(b))))
+	|length (findAllMovesAndCaptures (invertBoardPieces b)) == 0 && c == W = []
+	|length (findAllMovesAndCaptures (invertBoardPieces b)) /= 0 && c == W = mapJust (head (findAllMovesAndCaptures (invertBoardPieces b)))
 
 --	|Random strategy that chooses a random move contained from all valid moves
 randomStrategy :: Int -- ^ Takes in an Int representing the random number
 				-> Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 randomStrategy random (GameState {play = p, theBoard = b}) c
-	|length (findAllMovesAndCaptures b) == 0 = []
-	|length (findAllMovesAndCaptures b) /= 0 = mapJust (pickRandom (findAllMovesAndCaptures b) random)
+	|length (findAllMovesAndCaptures b) == 0 && c == B = []
+	|length (findAllMovesAndCaptures b) /= 0 && c == B = mapJust (pickRandom (findAllMovesAndCaptures b) random)
+	|length (findAllMovesAndCaptures (invertBoardPieces b)) == 0 && c == W = []
+	|length (findAllMovesAndCaptures (invertBoardPieces b)) /= 0 && c == W = mapJust (pickRandom (findAllMovesAndCaptures (invertBoardPieces b)) random)
 
 
 
@@ -117,6 +119,8 @@ pickRandom :: [[(Int,Int)]] -- ^ Takes in a set of a set of pairs from FindMoves
 			-> Int -- ^ Takes in the random number as an Int
 			-> [(Int,Int)] -- ^ Returns a chosen move as well as captures from that move
 pickRandom list rand = list !! (rand `mod` ((length list) - 1))
+
+
 
 
 --jasonStrategy	:: Chooser
