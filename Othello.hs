@@ -63,9 +63,10 @@ main' args = do
 	        
     inputChecking argument
        
---seeding random number generator
+{-seeding random number generator
 	g <- getStdGen
 	let x = randoms g :: [Int]
+	-}
 	
     putStrLn ("You gave " ++ show (length args) ++ " arguments")
     putStrLn "\nThe initial board:"
@@ -96,12 +97,16 @@ reallyStupidStrategy b c = Just (0,0)
 	Uses code from Tony's greedy strategy to cast the move as a Just move
 
 pickFirst :: Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
-pickFirst (GameState {play = p, theBoard = b}) c = mapJust (head (head (findMovesAndCaptures b c)))
+pickFirst (GameState {play = p, theBoard = b}) c
+	|length findAllMovesAndCaptures == 0 = Nothing
+	|length findAllMovesAndCaptures /= 0 = mapJust (head (head (findMovesAndCaptures b c)))
 
 --	|Random strategy that chooses a random move contained from all valid moves
 randomStrategy :: Int -- ^ Takes in an Int representing the random number
 				-> Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
-randomStrategy random (GameState {play = p, theBoard = b}) c = mapJust (pickRandom (findMovesAndCaptures b c))
+randomStrategy random (GameState {play = p, theBoard = b}) c
+	|length findAllMovesAndCaptures == 0 = Nothing
+	|length findAllMovesAndCaptures /= 0 = mapJust (pickRandom (findMovesAndCaptures b c))
 
 -}
 
