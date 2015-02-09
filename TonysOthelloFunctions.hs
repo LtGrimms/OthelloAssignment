@@ -11,20 +11,25 @@ import OthelloTools
 
 -- | validMoves 
 {- this function needs to take in a player and a board and return that players valid moves as a list of pairs (Int, Int) -}
-validMoves    :: GameState -> [(Int, Int)]
+validMoves    :: GameState -- ^ Takes in a Gamestate to access the board
+				-> [(Int, Int)] -- ^ Returns a list of coordinates of valid moves
 validMoves (GameState {play = p, theBoard = b})
     | fst p == Black = validMoves' b
     | fst p == White = validMoves' (invertBoardPieces b)
 
 {- The real work of validMoves is done here, we can now assume we are looking for valid moves for the black pieces -}
-validMoves'   :: Board -> [(Int, Int)]
+validMoves'   :: Board -- ^ Takes in a board to find valid moves 
+				-> [(Int, Int)] -- ^ Returns a list of coordinates of valid moves
 validMoves' x = validMoves'' x ++ validMoves''(rotateX x 1) ++ validMoves''(rotateX x 2) ++ validMoves''(rotateX x 3) ++ validMoves''(rotateX x 4) ++ validMoves''(rotateX x 5) ++ validMoves''(rotateX x 6) ++ validMoves''(rotateX x 7) 
 
-validMoves'' :: Board -> [(Int, Int)]
+validMoves'' :: Board -- ^ Takes in a board to find valid moves
+				-> [(Int, Int)] -- ^ Returns a list of coordinates of valid moves
 validMoves'' [] = []
 validMoves'' (x:xs) = testRow x (8 - length xs)  ++ validMoves'' xs 
 
-testRow :: [Cell] -> Int -> [(Int, Int)]
+testRow :: [Cell] -- ^ Takes in a list of cells to test
+			-> Int -- ^ Takes in the row number
+			-> [(Int, Int)] -- ^ Returns a list of coordinates
 testRow [] row = []
 testRow x row 
 	|fsmPass(foldr fsm (-1) x) = [((length x), row)]  ++ testRow (init x) row
@@ -32,13 +37,15 @@ testRow x row
 
 -- | invertBoardPieces
 {- takes a board and returns the board with every piece flipped -}
-invertBoardPieces :: Board -> Board
+invertBoardPieces :: Board -- ^ Takes in the current board
+					-> Board -- ^ Returns the board with every piece flipped
 invertBoardPieces [] = []
 invertBoardPieces (x:xs) = (invertRowPieces x) : (invertBoardPieces xs)
 
 -- | invertRowPieces
-{- subrutine of invertBoardPieces -}
-invertRowPieces :: [Cell] -> [Cell]
+{- subroutine of invertBoardPieces -}
+invertRowPieces :: [Cell] -- ^ Takes in a list of Cell owners
+				-> [Cell] -- ^ Returns the list of inverted cell owners
 invertRowPieces [] = []
 invertRowPieces (x:xs) = (otherCell x) : (invertRowPieces xs)
 
@@ -92,7 +99,9 @@ fsmPass _ = False  -- I think I'll need this to ensure the pass func works on fu
 -- playMove :: GameState -> (Int,Int) -> GameState
 
 
-rotateX :: [[a]]-> Int -> [[a]]
+rotateX :: [[a]] -- ^ Takes in a list of lists representing the board
+		-> Int -- ^ Takes in the degree rotation
+		-> [[a]] -- ^ Returns the rotated board
 rotateX board 0 = board
 rotateX board x = rotateX (rotate45CW board) (x-1)
 

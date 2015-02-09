@@ -37,13 +37,16 @@ greedy (GameState {play = p, theBoard = b}) c = mapJust (maxCaptures (findMovesA
 
 -- | helper function for greedy chooser, takes a list of valid moves and returns the one with the
 --   most caputures
-maxCaptures :: [[(Int,Int)]] -> [(Int, Int)]
+
+maxCaptures :: [[(Int,Int)]] -- ^ Takes in the list of valid moves in the form of a nested list of Int pairs
+			-> [(Int, Int)] -- ^ Returns the move with the most captures along with the captured pieces
 maxCaptures moves = foldr findMax [] moves
 
 -- | helper function for greedy chooser, compares two moves and determines which will capture more
-findMax :: [(Int,Int)]  -- first move to be comparred
-        -> [(Int,Int)]  -- second move to be comparred
-        -> [(Int,Int)]  -- move with most captures
+findMax :: [(Int,Int)]  -- ^ First move to be compared
+        -> [(Int,Int)]  -- ^ Second move to be compared
+        -> [(Int,Int)]  -- ^ Returns the move with most captures
+
 findMax [] [] = []
 findMax [] a = a
 findMax a b
@@ -51,7 +54,8 @@ findMax a b
  | otherwise = b
 
 -- | since choosers retrun Maybe (Int, Int)s this makes a move into a 'Just' move
-mapJust :: [(Int, Int)] -> [Maybe (Int, Int)]
+mapJust :: [(Int, Int)] -- ^ Takes in a normal list of Int pairs
+		-> [Maybe (Int, Int)] -- ^ Returns a casted Just pair of Ints
 mapJust [] = []
 mapJust (x:xs) = Just (fst x, snd x) : mapJust xs
 --------------------------------------
@@ -99,46 +103,49 @@ putStrategy s = putStr (strategy2Strn s)
 ----------------------Don't put IO in these------------------------
 
 -- | this will palce an individual piece on a board
-placePiece :: (Int, Int)  -- Place to put the piece (in Std coordinates)
-           -> Board       -- board to place Piece
-           -> Cell        -- which piece to place
-           -> Board       -- board with piece played
+placePiece :: (Int, Int)  -- ^ Place to put the piece (in Std coordinates)
+           -> Board       -- ^ Current board to place Piece
+           -> Cell        -- ^ Represents which player is placing the piece
+           -> Board       -- ^ Returns the board with piece played
 placePiece mv b p = replace2 b ((fst mv - 1), (8 - snd mv)) p
 
 -- | this will take in an entire move and play/capture each piece
-playMove :: [Maybe (Int, Int)] -- The move from a chooser
-         -> Board              -- The board to play the move on
-         -> Cell               -- The Player making the move
-         -> Board              -- The board after the move is made
+playMove :: [Maybe (Int, Int)] -- ^ The move from a chooser
+         -> Board              -- ^ The board to play the move on
+         -> Cell               -- ^ The Player making the move
+         -> Board              -- ^ Returns the board after the move is made
 playMove [] b _ = b
 playMove (mv:mvs) b p
  | mv == Nothing = playMove mvs b p
  | otherwise = placePiece (maybe (0,0) (\x -> x) mv) (playMove mvs b p) p
 
 -- | Converts a player Type into is cooresponding Cell type
-playedBy :: Player -> Cell
+playedBy :: Player -- ^ Takes in the player that is playing
+			-> Cell -- ^ Returns the corresponding representation of the player
 playedBy White = W
 playedBy Black = B
 
 -- | This function is used to create the 'Played' variable in a new gamestate.
 --   It will take in a move from a chooser and determine if it is a pass or where
 --   the chooser chose to play
-newPlayedFrom :: [Maybe (Int, Int)] -> Played
+newPlayedFrom :: [Maybe (Int, Int)] -- ^ Takes in a pair of Maybe Ints
+				-> Played -- ^ Returns whether or not the move is a pass or play
 newPlayedFrom [] = Passed
 newPlayedFrom moves = Played (maybe (0,0) (\x -> x) (head moves))
 
 
 -- | Since moves are of type [Maybe (Int, Int)] we need sometimes need to remove the
 --   'maybes'. This function does that.
-unMaybe :: [Maybe (Int, Int)] -> [(Int, Int)]
+unMaybe :: [Maybe (Int, Int)] -- ^ Takes in a Maybe pair of Ints
+		-> [(Int, Int)] -- ^ Returns a normal pair of Ints
 unMaybe = map unmaybe
   where unmaybe :: Maybe (Int, Int) -> (Int, Int)
         unmaybe = maybe (0, 0) (\y -> y)
 
 -- | next gamestate represnts a chooser taking a turn in the game
-nextGamestate :: Chooser     -- the chooser taking a turn
-              -> GameState   -- the gamestate before the turn is taken
-              -> GameState   -- the gamestate after the turn is taken
+nextGamestate :: Chooser     -- ^ The chooser taking a turn
+              -> GameState   -- ^ The gamestate before the turn is taken
+              -> GameState   -- ^ Returns the gamestate after the turn is taken
 nextGamestate c (GameState {play = p, theBoard = b}) =
   GameState (player, (newPlayedFrom setOfMoves)) (playMove setOfMoves b playerCell)
 
@@ -151,7 +158,9 @@ nextGamestate c (GameState {play = p, theBoard = b}) =
 -- | since the board starts with a play variable (Black, Init) we need a
 --   different function to make the first move that will not flip the Player
 --   variable within Play
-firstMove :: Chooser -> GameState -> GameState
+firstMove :: Chooser -- ^ Takes in the strategy of the first player
+		-> GameState -- ^ Takes in the initial gamestate
+		-> GameState -- ^ Returns the new gamestate after the move is played
 firstMove c (GameState {play = p, theBoard = b}) =
   GameState (player, (newPlayedFrom setOfMoves)) (playMove setOfMoves b playerCell)
 
