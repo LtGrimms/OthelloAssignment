@@ -120,11 +120,17 @@ pickRandom :: [[(Int,Int)]] -- ^ Takes in a set of a set of pairs from FindMoves
 			-> [(Int,Int)] -- ^ Returns a chosen move as well as captures from that move
 pickRandom list rand = list !! (rand `mod` ((length list) - 1))
 
-
+-- |Used to pop the first value off of the random list of Ints
+getNextRandom :: [a] -- ^ Takes in a list
+				-> [a] -- ^ Returns a list with the first value popped off
+getNextRandom x = y
+	where y = tail x
 
 
 --jasonStrategy	:: Chooser
 --jasonStrategy b c = Just (0,0)
+--	|length (findAllMovesAndCaptures (theBoard b) ) /= 0  = Just (head(head( findAllMovesAndCaptures (theBoard b) )))
+--	|True = Just (0,0)
 
 mapJust :: [(Int, Int)] -- ^ Takes in a normal list of Int pairs
 		-> [Maybe (Int, Int)] -- ^ Returns a casted Just pair of Ints
