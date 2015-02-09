@@ -118,7 +118,9 @@ pickRandom list rand = list !! (rand `mod` ((length list) - 1))
 
 
 jasonStrategy	:: Chooser
-jasonStrategy b c = Just (0,0)
+jasonStrategy b c 
+	|length (findAllMovesAndCaptures (theBoard b) ) /= 0  = Just (head(head( findAllMovesAndCaptures (theBoard b) )))
+	|True = Just (0,0)
 
 ---Board rotations-------------------------------------------------------------
 
