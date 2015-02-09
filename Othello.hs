@@ -7,7 +7,7 @@ import System.Environment
 import System.IO.Unsafe
 import Data.Either
 import OthelloTools
-import TonysOthelloFunctions
+--import TonysOthelloFunctions
 import FSM
 --need some help which validmove function should I be using one from TonysOthelloFunctions or fsm or the playmove commented out in this file
 
@@ -63,10 +63,10 @@ main' args = do
 	        
     inputChecking argument
        
-{-seeding random number generator
-	g <- getStdGen
-	let x = randoms g :: [Int]
-	-}
+--seeding random number generator
+    g <- getStdGen
+    let x = randoms g :: [Int]
+	
 	
     putStrLn ("You gave " ++ show (length args) ++ " arguments")
     putStrLn "\nThe initial board:"
@@ -75,40 +75,42 @@ main' args = do
     putStrLn "The initial board rotated 90 degrees:"
     putBoard $ rotateClock $ theBoard initBoard
     
-    putStrLn "\nThe initial board with reallyStupidStrategy having played one move (clearly illegal!):"
+  {-  putStrLn "\nThe initial board with reallyStupidStrategy having played one move (clearly illegal!):"
     let mv = reallyStupidStrategy (initBoard) B
        in case mv of
           Nothing   -> putStrLn "Black passed."
           (Just pt) -> putBoard $ replace2 (theBoard initBoard) pt B
-
+-}
 ---Strategies-------------------------------------------------------
 
 {- | This is the type for all player functions.  A player strategy function takes a 
      board and returns a point (Int,Int) that it chooses -- this should be a legal move.  
      If the player passes, the funciton should return Nothing.
 -}           
-type Chooser = GameState -> Cell -> Maybe (Int,Int)
+type Chooser = GameState -> Cell -> [Maybe (Int,Int)]
 
 -- | This strategy lives up to it's name: it always chooses to play at cell (0,0).
-reallyStupidStrategy  :: Chooser
-reallyStupidStrategy b c = Just (0,0)
+--reallyStupidStrategy  :: Chooser
+--reallyStupidStrategy b c = Just (0,0)
 
 {- |Strategy to pick the first valid move in the list
-	Uses code from Tony's greedy strategy to cast the move as a Just move
+	Uses code from Tony's greedy strategy to cast the move as a Just move-}
 
 pickFirst :: Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 pickFirst (GameState {play = p, theBoard = b}) c
-	|length findAllMovesAndCaptures == 0 = Nothing
-	|length findAllMovesAndCaptures /= 0 = mapJust (head (head (findMovesAndCaptures b c)))
+	|length (findAllMovesAndCaptures b) == 0 && c == B = []
+	|length (findAllMovesAndCaptures b) /= 0 && c == B = mapJust (head (findAllMovesAndCaptures b))
+	|length (findAllMovesAndCaptures (invertBoardPieces(b))) == 0 && c == W = []
+	|length (findAllMovesAndCaptures (invertBoardPieces(b))) /= 0 && c == W = mapJust (head (findAllMovesAndCaptures (invertBoardPieces(b))))
 
 --	|Random strategy that chooses a random move contained from all valid moves
 randomStrategy :: Int -- ^ Takes in an Int representing the random number
 				-> Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 randomStrategy random (GameState {play = p, theBoard = b}) c
-	|length findAllMovesAndCaptures == 0 = Nothing
-	|length findAllMovesAndCaptures /= 0 = mapJust (pickRandom (findMovesAndCaptures b c))
+	|length (findAllMovesAndCaptures b) == 0 = []
+	|length (findAllMovesAndCaptures b) /= 0 = mapJust (pickRandom (findAllMovesAndCaptures b) random)
 
--}
+
 
 --	|Used to pick a random move from the total set of valid moves
 pickRandom :: [[(Int,Int)]] -- ^ Takes in a set of a set of pairs from FindMovesAndCaptures, represents all valid moves
@@ -117,8 +119,13 @@ pickRandom :: [[(Int,Int)]] -- ^ Takes in a set of a set of pairs from FindMoves
 pickRandom list rand = list !! (rand `mod` ((length list) - 1))
 
 
-jasonStrategy	:: Chooser
-jasonStrategy b c = Just (0,0)
+--jasonStrategy	:: Chooser
+--jasonStrategy b c = Just (0,0)
+
+mapJust :: [(Int, Int)] -- ^ Takes in a normal list of Int pairs
+		-> [Maybe (Int, Int)] -- ^ Returns a casted Just pair of Ints
+mapJust [] = []
+mapJust (x:xs) = Just (fst x, snd x) : mapJust xs
 
 ---Board rotations-------------------------------------------------------------
 
