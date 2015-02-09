@@ -9,7 +9,7 @@ import Data.Either
 import OthelloTools
 import TonysOthelloFunctions
 import FSM
-
+--need some help which validmove function should I be using one from TonysOthelloFunctions or fsm or the playmove commented out in this file
 
 {- | This program is used as a template for the CPSC 449  Othello assignment.
 
