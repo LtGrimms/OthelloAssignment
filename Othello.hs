@@ -66,6 +66,13 @@ main' args = do
 --seeding random number generator
     g <- getStdGen
     let x = randoms g :: [Int]
+
+{- To run the random strategy going to have to get the next random number from the infinite list before every call with:
+
+let y = getNextRandom x
+let x = getNextRandom x
+
+then pass in the head of x}
 	
 	
     putStrLn ("You gave " ++ show (length args) ++ " arguments")
