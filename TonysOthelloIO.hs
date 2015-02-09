@@ -164,7 +164,9 @@ firstMove c (GameState {play = p, theBoard = b}) =
 
 
 main = do
-  putStrLn "Hello, Please enter the name of Strategy 1"
+  putStrLn "Hello, Welcome to the CPSC449 Othello Assignment"
+  putStrLn "Valid Strategies are:"
+  putStrLn "  Greedy"
 
   let inputChecking a =
 	  if (strn2Strategy a /= DoesNotExist)
@@ -173,10 +175,11 @@ main = do
           putStr "invalid Strategy\n"
           return () -- why doesnt this quit the execution?
 
+  putStrLn "Please select a black strategy"
   s1 <- getLine
   inputChecking s1
 
-  putStrLn "Please enter the second Strategy"
+  putStrLn "Please select a white strategy"
   s2 <- getLine
   inputChecking s2
 
