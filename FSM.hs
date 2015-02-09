@@ -9,17 +9,17 @@ import OthelloTools
 
 -- | findMoves takes a board and returns only the squares to place pieces
 --   This is currently not being used by the main program
-findMoves :: Board          -- The board to find moves on
-          -> [(Int, Int)]   -- a list of valid squares to move on
+findMoves :: Board          -- ^ The board to find moves on
+          -> [(Int, Int)]   -- ^ Returns a list of valid squares to move on
 findMoves [] = []
 findMoves x = map head (findMovesAndCaptures' x)
 
 
 -- | findMovesAndCaptures take a board and cell and returns each valid move
 --   along with the cells that will be captured if that move is played
-findMovesAndCaptures :: Board          -- the board to find moves on
-                     -> Cell           -- the player cell whose moves will be found
-                     -> [[(Int, Int)]] -- the list of movesAndCaptures
+findMovesAndCaptures :: Board          -- ^ The board to find moves on
+                     -> Cell           -- ^ The player cell whose moves will be found
+                     -> [[(Int, Int)]] -- ^ Returns the list of moves and captures
 findMovesAndCaptures b cell
   | cell == W = findMovesAndCaptures' (invertBoardPieces b)
   | otherwise = findMovesAndCaptures' b
@@ -27,8 +27,8 @@ findMovesAndCaptures b cell
 
 -- | findMovesAndCaptures' is a helper function for findMovesAndCaptures
 --   it returns all valid moves and captures for the black pieces on a board
-findMovesAndCaptures' :: Board          --the board to find moves on
-                      -> [[(Int, Int)]] --the list of movesAndCaptures
+findMovesAndCaptures' :: Board          -- ^ The board to find moves on
+                      -> [[(Int, Int)]] -- ^ Returns the list of moves and captures
 findMovesAndCaptures' [] = []
 findMovesAndCaptures' (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML x) ++ findMovesAndCaptures' xs
 
@@ -36,20 +36,22 @@ findMovesAndCaptures' (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML
 -- | findAllMovesAndCaptures returns all valid moves on the board as a double nested list where the "lowest" list
 --   contains a move and a list of pieces which that move will capture e.g. [[move, captures ...]]
 
-findAllMovesAndCaptures :: Board -> [[(Int, Int)]]
+findAllMovesAndCaptures :: Board -- ^ The board to find moves on
+						-> [[(Int, Int)]] -- ^ Returns the list of moves and captures
 findAllMovesAndCaptures board = [elem| perm<-[ map(map (`mapMoves` r))(findMovesAndCaptures' (rotateX board r )) | r  <- [0,1,2,3]], elem<-perm]
 
 -- | This is currently not used in any other functions or the execution of the main program
 --   This might be usefull in speeding things up if you make it without making calls to movesandcaptures
-validMovesOnRow :: [[(Int, Int)]] -> [(Int,Int)]
+validMovesOnRow :: [[(Int, Int)]] -- ^ Takes in a nested list of coordinates representing the board
+				 -> [(Int,Int)] -- ^ Returns a list of valid moves in a row
 validMovesOnRow [] = []
 validMovesOnRow (x:xs) = head x : validMovesOnRow xs
 
 -- | This is a helper function for findMoves and Captures, it uses the info from the FSM to create valid (Int, Int) pairs
 --   returns the valid moves
-movesAndCapturesOnRow :: Int               -- the value of the row fed to the fucntion. Rows are counted upwards from the bottom of a board
-                      -> [(Int, Int, Int)] -- the memory from the FSM on the row above
-                      -> [[(Int, Int)]]    -- a list of valid moves and the spaces they will capture
+movesAndCapturesOnRow :: Int               -- ^ The value of the row fed to the fucntion. Rows are counted upwards from the bottom of a board
+                      -> [(Int, Int, Int)] -- ^ The memory from the FSM on the row above
+                      -> [[(Int, Int)]]    -- ^ Returns a list of valid moves and the spaces they will capture
 movesAndCapturesOnRow _ [] = []
 movesAndCapturesOnRow x (y:ys) = (makeSetofCaptures x y True) : movesAndCapturesOnRow x ys
     where makeSetofCaptures :: Int -> (Int, Int, Int) -> Bool -> [(Int, Int)]
@@ -64,21 +66,23 @@ movesAndCapturesOnRow x (y:ys) = (makeSetofCaptures x y True) : movesAndCaptures
 
 -- | invertBoardPieces
 -- takes a board and returns the board with every piece flipped
-invertBoardPieces :: Board -> Board
+invertBoardPieces :: Board -- ^ Takes in the current board
+					-> Board -- ^ Returns a board with all the pieces flipped
 invertBoardPieces [] = []
 invertBoardPieces (x:xs) = (invertRowPieces x) : (invertBoardPieces xs)
 
 -- | invertRowPieces
 -- subrutine of invertBoardPieces
-invertRowPieces :: [Cell] -> [Cell]
+invertRowPieces :: [Cell] -- ^ Takes in the list of piece owners in a row
+				-> [Cell] -- ^ Returns the list of inverted piece owners in a row
 invertRowPieces [] = []
 invertRowPieces (x:xs) = (otherCell x) : (invertRowPieces xs)
 
 -- | mapMoves will take an (Int, Int) pair from a board rotated 45, 90 or 135 degrees
 --   and return its co-ordinates in standard position
-mapMoves :: (Int, Int)   -- The input pair to be 'back-rotated' to stnd position
-         -> Int          -- The number of 45 degree rotations to take the input through
-         -> (Int, Int)   -- The pair represented in standard position
+mapMoves :: (Int, Int)   -- ^ The input pair to be 'back-rotated' to stnd position
+         -> Int          -- ^ The number of 45 degree rotations to take the input through
+         -> (Int, Int)   -- ^ Returns the pair represented in standard position
 mapMoves move 0 = move
 mapMoves (c,r) 1
 	 |(r <= 8) = (8-(r-c),c) 
