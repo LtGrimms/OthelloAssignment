@@ -33,11 +33,10 @@ replace2 xs (x,y) elem = replace xs y (replace (xs !! y) x elem)
 -----------------GREEDY--------------
 -- | This is a sample greedy strategy
 greedy :: Chooser
-greedy (GameState {play = p, theBoard = b}) c = mapJust (maxCaptures (findMovesAndCaptures b c))
+greedy (GameState {play = p, theBoard = b}) c = mapJust (maxCaptures (findAllMovesAndCaptures b c))
 
 -- | helper function for greedy chooser, takes a list of valid moves and returns the one with the
 --   most caputures
-
 maxCaptures :: [[(Int,Int)]] -- ^ Takes in the list of valid moves in the form of a nested list of Int pairs
 			-> [(Int, Int)] -- ^ Returns the move with the most captures along with the captured pieces
 maxCaptures moves = foldr findMax [] moves
@@ -216,6 +215,22 @@ main = do
 
 
 
+-- BUCKET LIST
+{-
+
+1. make the program print strategies and quit when invalid strat is input
+2. make choosers able to see the whole set of moves - check
+3. compress moves from findAllMovesAndCaptures
+4. print winner if game ends with a set of valid moves
+5. change chooser strategies to type chooser :: GameState -> Cell -> Maybe (Int, Int)
+
+optn:
+
+1. allow strategies that don't always make valid moves;
+       change newPlayedFrom function to be more robust
+       check last play on each itteration of playTheGame
+2.
 
 
 
+-}

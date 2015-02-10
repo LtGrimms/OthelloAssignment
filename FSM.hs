@@ -37,8 +37,17 @@ findMovesAndCaptures' (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML
 --   contains a move and a list of pieces which that move will capture e.g. [[move, captures ...]]
 
 findAllMovesAndCaptures :: Board -- ^ The board to find moves on
+                        -> Cell  -- ^ The cell of the player whose moves we are searching for
 						-> [[(Int, Int)]] -- ^ Returns the list of moves and captures
-findAllMovesAndCaptures board = [elem| perm<-[ map(map (`mapMoves` r))(findMovesAndCaptures' (rotateX board r )) | r  <- [0,1,2,3]], elem<-perm]
+findAllMovesAndCaptures b c
+  | c == W = findAllMovesAndCaptures' (invertBoardPieces b)
+  | otherwise = findAllMovesAndCaptures' b
+
+-- | findAllMovesAndCaptures' will assume that we are looking for black pieces and find all moves and
+--   captures for the black player.
+findAllMovesAndCaptures' :: Board -- ^ The board to find moves on
+                         -> [[(Int, Int)]] -- ^ Returns the list of moves and captures
+findAllMovesAndCaptures' board = [elem| perm<-[ map(map (`mapMoves` r))(findMovesAndCaptures' (rotateX board r )) | r  <- [0,1,2,3]], elem<-perm]
 
 -- | This is currently not used in any other functions or the execution of the main program
 --   This might be usefull in speeding things up if you make it without making calls to movesandcaptures
@@ -96,8 +105,25 @@ mapMoves (c,r) 1
 mapMoves (c,r) 2 = (9-r, c)
 mapMoves (c,r) 3
 	 |(r <= 8) = (9-c, 8 -(r-c))
-	 |otherwise = (16-(r+c), c)	 
+	 |otherwise = (16-(r+c), c)
 
+
+{-
+
+-- | compressAllMovesAndCaptures will take in a set of moves and captures from findAll and
+--   return a compress version of the set. This in neccessary because captures will be missed
+--   if the choosers pick a moves from an uncompressed version. For example if
+--   [[(5,4)(5,5)],[(5,4),(6,4)]] is returned from the findAll function the chooser would only
+--   get one of the captures from a move that should capture two.
+compressAllMovesAndCaptures :: [[(Int,Int)]]
+                            -> [[(Int,Int)]]
+compressAllMovesAndCaptures
+compressAllMovesAndCaptures ((a:as):b:c:d:[]) = mergeMovesAndCaptures (mergerMovesAndCaptures (mergeMovesAndCaptures a b) c) d : compressAllMovesAndCaptures (as:b:c:d:[])
+compressAllMovesAndCaptures ([]:(b:bs):c:d:[]) = mergeMovesAndCaptures (mergeMovesAndCaptures b c) d : compressAllMovesAndCaptures ([]:bs:c:d:[])
+compressAllMovesAndCaptures ([]:[]:(c:cs):d:[]) = mergeMovesAndCaptures c d : compressAllMovesandCaptures ([]:[]:cs:d)
+compressAllMovesAndCaptures ([]:[]:[])
+
+-}
 
 
 ----------------------------------FSM--------------------------------------
