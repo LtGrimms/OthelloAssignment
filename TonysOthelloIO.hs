@@ -2,7 +2,7 @@ module IO where
 
 import OthelloTools
 import FSM
--- import TonysOthelloFunctions
+import TonysOthelloFunctions
 
 ---------------------From Othello.hs------------------------------
 

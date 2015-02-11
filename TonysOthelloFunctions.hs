@@ -8,7 +8,7 @@ import OthelloTools
 
 
 {- Most of these functions are depreciated, the only usefull ones are the rotate functions -}
-
+{-
 -- | validMoves 
 {- this function needs to take in a player and a board and return that players valid moves as a list of pairs (Int, Int) -}
 validMoves    :: GameState -- ^ Takes in a Gamestate to access the board
@@ -97,7 +97,7 @@ fsmPass _ = False  -- I think I'll need this to ensure the pass func works on fu
 
 -- | meeting
 -- playMove :: GameState -> (Int,Int) -> GameState
-
+-}
 
 rotateX :: [[a]] -- ^ Takes in a list of lists representing the board
 		-> Int -- ^ Takes in the degree rotation

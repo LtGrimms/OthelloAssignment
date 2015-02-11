@@ -40,8 +40,10 @@ findAllMovesAndCaptures :: Board -- ^ The board to find moves on
                         -> Cell  -- ^ The cell of the player whose moves we are searching for
 						-> [[(Int, Int)]] -- ^ Returns the list of moves and captures
 findAllMovesAndCaptures b c
-  | c == W = findAllMovesAndCaptures' (invertBoardPieces b)
-  | otherwise = findAllMovesAndCaptures' b
+  | c == W = compress (findAllMovesAndCaptures' (invertBoardPieces b))
+  | otherwise = compress (findAllMovesAndCaptures' b)
+     where compress :: [[(Int,Int)]] -> [[(Int,Int)]]
+           compress a = compressAllMovesAndCaptures (compressAllMovesAndCaptures a)
 
 -- | findAllMovesAndCaptures' will assume that we are looking for black pieces and find all moves and
 --   captures for the black player.
@@ -105,10 +107,9 @@ mapMoves (c,r) 1
 mapMoves (c,r) 2 = (9-r, c)
 mapMoves (c,r) 3
 	 |(r <= 8) = (9-c, 8 -(r-c))
-	 |otherwise = (16-(r+c), c)
+	 |otherwise = (17-(r+c), c)
 
 
-{-
 
 -- | compressAllMovesAndCaptures will take in a set of moves and captures from findAll and
 --   return a compress version of the set. This in neccessary because captures will be missed
@@ -117,13 +118,22 @@ mapMoves (c,r) 3
 --   get one of the captures from a move that should capture two.
 compressAllMovesAndCaptures :: [[(Int,Int)]]
                             -> [[(Int,Int)]]
-compressAllMovesAndCaptures
-compressAllMovesAndCaptures ((a:as):b:c:d:[]) = mergeMovesAndCaptures (mergerMovesAndCaptures (mergeMovesAndCaptures a b) c) d : compressAllMovesAndCaptures (as:b:c:d:[])
-compressAllMovesAndCaptures ([]:(b:bs):c:d:[]) = mergeMovesAndCaptures (mergeMovesAndCaptures b c) d : compressAllMovesAndCaptures ([]:bs:c:d:[])
-compressAllMovesAndCaptures ([]:[]:(c:cs):d:[]) = mergeMovesAndCaptures c d : compressAllMovesandCaptures ([]:[]:cs:d)
-compressAllMovesAndCaptures ([]:[]:[])
+compressAllMovesAndCaptures []     = []
+compressAllMovesAndCaptures (d:[]) = d:[]
+compressAllMovesAndCaptures (a:as) = compress a as : compressAllMovesAndCaptures (modified a as)
+  where compress :: [(Int, Int)] -> [[(Int, Int)]] -> [(Int, Int)]
+        compress a [] = a
+        compress a (b:bs)
+         | head a == head b = head b : (tail a ++ tail b)
+         | otherwise        = compress a bs
+        modified :: [(Int,Int)] -> [[(Int,Int)]] -> [[(Int,Int)]]
+        modified a [] = []
+        modified a (b:bs)
+         | head a == head b = bs
+         | otherwise        = b : modified a bs
 
--}
+
+
 
 
 ----------------------------------FSM--------------------------------------
@@ -234,3 +244,23 @@ runFSML  :: [Cell]             -- the row to be tested
          -> [(Int, Int, Int)]  -- the compressed memory
 runFSML row = fsmMemManage (foldl fsml (-1, (0,0), -1, (0,0), []) row)
 
+
+-- Bucket List
+{-
+1. test and fix map moves functions, possible sorce of error in findAllMovesAndCaptures'
+*IO> board4
+_ _ _ _ _ _ _ _
+|_|_|_|_|_|_|_|_|
+|_|_|_|_|_|_|_|_|
+|_|_|_|_|_|_|_|_|
+|_|_|_|W|B|_|_|_|
+|_|_|_|W|W|_|_|_|
+|_|_|_|_|B|_|_|_|
+|_|_|_|_|_|_|_|_|
+|_|_|_|_|_|_|_|_|
+
+*IO> findAllMovesAndCaptures board4 B
+[[(3,5),(4,5)],[(3,3),(4,4)],[(2,5),(3,4)]]
+                                /\    /\
+                            NOT THE RIGHT MOVES!
+-}
