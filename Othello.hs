@@ -107,8 +107,6 @@ pickFirst :: Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 pickFirst (GameState {play = p, theBoard = b}) c
 	|length (findAllMovesAndCaptures b c) == 0 = []
 	|length (findAllMovesAndCaptures b c) /= 0 = mapJust (head (findAllMovesAndCaptures b c))
---	|length (findAllMovesAndCaptures (invertBoardPieces b)) == 0 && c == W = []
---	|length (findAllMovesAndCaptures (invertBoardPieces b)) /= 0 && c == W = mapJust (head (findAllMovesAndCaptures (invertBoardPieces b)))
 
 --	|Random strategy that chooses a random move contained from all valid moves
 randomStrategy :: Int -- ^ Takes in an Int representing the random number
@@ -116,8 +114,6 @@ randomStrategy :: Int -- ^ Takes in an Int representing the random number
 randomStrategy random (GameState {play = p, theBoard = b}) c
 	|length (findAllMovesAndCaptures b c) == 0 = []
 	|length (findAllMovesAndCaptures b c) /= 0 = mapJust (pickRandom (findAllMovesAndCaptures b c) random)
---	|length (findAllMovesAndCaptures (invertBoardPieces b)) == 0 && c == W = []
---	|length (findAllMovesAndCaptures (invertBoardPieces b)) /= 0 && c == W = mapJust (pickRandom (findAllMovesAndCaptures (invertBoardPieces b)) random)
 
 
 
