@@ -330,9 +330,10 @@ flipList :: Board -- ^ Takes in the current board
 		-> [(Int,Int)] -- ^ Takes in a list of coordinates to flip
 		-> Cell -- ^ Takes in a player
 		-> Board -- ^ Returns the new board
+flipList a [] _ = a
 flipList a (x:xs) player = flipList (flip' a x player) xs player
 
 --	|Have to convert between the coordinates returned by findMovesAndCaptures in order to use the replace function
 convert :: (Int,Int) -- ^ Takes in a pair which represents the initial cooridnates
 		-> (Int,Int) -- ^ Returns the converted pair
-convert x = (((snd x) - 1), (abs ((fst x) - 8)))
+convert x = (((fst x) - 1), (abs ((snd x) - 8)))
