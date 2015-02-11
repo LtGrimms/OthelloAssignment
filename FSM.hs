@@ -105,7 +105,7 @@ mapMoves (c,r) 1
 mapMoves (c,r) 2 = (9-r, c)
 mapMoves (c,r) 3
 	 |(r <= 8) = (9-c, 8 -(r-c))
-	 |otherwise = (16-(r+c), c)
+	 |otherwise = (17-(r+c), c)
 
 
 {-
