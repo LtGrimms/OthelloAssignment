@@ -246,11 +246,10 @@ main = do
 -- BUCKET LIST
 {-
 
-1. make the program print strategies and quit when invalid strat is input
+1. make the program print strategies and quit when invalid strat is input - check
 2. make choosers able to see the whole set of moves - check
-3. compress moves from findAllMovesAndCaptures
+3. compress moves from findAllMovesAndCaptures - check
 4. print winner if game ends with a set of valid moves
-5. change chooser strategies to type chooser :: GameState -> Cell -> Maybe (Int, Int)
 
 optn:
 
