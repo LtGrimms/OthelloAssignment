@@ -47,7 +47,6 @@ main' args = do
 	-}
 --taking arguments from command land
     argument	<-	getArgs
-<<<<<<< Updated upstream
 
     let inputChecking' a =
 	    if length argument == 2 -- if the user did not enter any arguments go to interactive mode
@@ -58,9 +57,6 @@ main' args = do
 	            putStrLn s2
 	    else 
 	       putStrLn "interactive mode"
-=======
-	
->>>>>>> Stashed changes
     let inputChecking a =
 
 	    if length a /= 2 -- if the user did not enter any arguments go to interactive mode
@@ -80,12 +76,7 @@ main' args = do
 	        
     inputChecking' argument
     inputChecking argument
-<<<<<<< Updated upstream
-    
-=======
 
-
->>>>>>> Stashed changes
 --seeding random number generator
     g <- getStdGen
     let x = randoms g :: [Int]
