@@ -69,7 +69,9 @@ firstAvailable_st :: Chooser
 firstAvailable_st (GameState {play = p , theBoard =b})  c = mapJust(firstAvailable (findAllMovesAndCaptures b c))
 
 firstAvailable :: [[(Int,Int)]] -> ([(Int,Int)])
-firstAvailable moves = (head (moves))
+firstAvailable moves
+  | moves == [] = []
+  | otherwise = (head (moves))
 -------------------------------------------------------------------------
 
 
@@ -78,7 +80,7 @@ corner_st :: Chooser
 corner_st (GameState {play = p , theBoard =b})  c = mapJust( corner (findAllMovesAndCaptures b c))
 
 mysubtract :: (Int,Int) -> (Int, Int)
-mysubtract (a,b) = (a-3,b-3)
+mysubtract (a,b) = (a-4,b-4)
 
 
 mysquare :: (Int,Int) -> Int
@@ -89,6 +91,7 @@ mycalculator moves ((-1),[]) = (mysquare (mysubtract (head(moves))),moves)
 mycalculator moves (s,x) = if( mysquare(mysubtract(head(moves))) >=  s)
                 then (mysquare(mysubtract(head(moves))),moves)
                 else (s,x)
+
 
 
 corner :: [[(Int,Int)]] -> ([(Int, Int)])
@@ -102,7 +105,7 @@ corner x = snd(foldr mycalculator ((-1),[]) x )
 ----------------Strategy Names and Functions----------------------
 
 -- | these are the valid strategies
-data Strategy = Stupid | Greedy | St3 | DoesNotExist
+data Strategy = First | Greedy | Corner | DoesNotExist
 
 instance Show (Strategy) where
   show s = strategy2Strn s
@@ -112,22 +115,23 @@ instance Eq (Strategy) where
 
 -- | Converts a Strategy data type to a string representation
 strategy2Strn   :: Strategy -> String
-strategy2Strn Stupid = "Stupid"
+strategy2Strn First = "First"
 strategy2Strn Greedy = "Greedy"
-strategy2Strn St3 = "St3"
+strategy2Strn Corner = "Corner"
 strategy2Strn DoesNotExist = "This is not a strategy"
 
 -- | converts a string into a strategy
 strn2Strategy   :: String -> Strategy
-strn2Strategy "Stupid" = Stupid
+strn2Strategy "Corner" = Corner
 strn2Strategy "Greedy" = Greedy
-strn2Strategy "St3" = St3
+strn2Strategy "First" = First
 strn2Strategy _ = DoesNotExist
 
 -- | converts strategies into their cooresponding chooser types
 strategy2Chooser :: Strategy -> Chooser
-strategy2Chooser Stupid = reallyStupidStrategy
 strategy2Chooser Greedy = greedy
+strategy2Chooser First = firstAvailable_st
+strategy2Chooser Corner = corner_st
 
 -- | composses strn2Strategy and strategy2Chooser
 strn2Chooser :: String -> Chooser
@@ -206,12 +210,31 @@ firstMove c (GameState {play = p, theBoard = b}) =
     playerCell = playedBy player
     setOfMoves = c (GameState p b) playerCell
 
+-- | endgame will determine the winner and print out an endgame message
+endgame :: String -> String -> Board -> IO ()
+endgame c1 c2 b
+  | countBlackPieces b > countWhitePieces b = putStrLn ("Black wins! Black (" ++ c1 ++ ") : " ++ show (countBlackPieces b) ++  "White (" ++ c2 ++ ") :" ++ show (countWhitePieces b))
+  | otherwise                       = putStrLn ("White wins! Black (" ++ c1 ++ ") : " ++ show (countBlackPieces b) ++  "White (" ++ c2 ++ ") :" ++ show (countWhitePieces b))
+
+-- | counts the black pieces on a board
+countBlackPieces :: Board -> Int
+countBlackPieces [] = 0
+countBlackPieces (x:xs) = (countBlack x) + (countBlackPieces xs)
+  where countBlack :: [Cell] -> Int
+        countBlack [] = 0
+        countBlack (x:xs)
+         | x == B = 1
+         | otherwise = 0
+
+-- | counts the white pieces on a board
+countWhitePieces :: Board -> Int
+countWhitePieces b = countBlackPieces (invertBoardPieces b)
+
 -----------------------------main----------------------------------
 
 playTheGame :: Chooser -> Chooser -> GameState -> IO ()
 playTheGame active inactive (GameState {play = p, theBoard = b})
-      | (lastPlay == Passed) && (newSetOfMoves == []) = do
-                                                      print "Both players passed, game over"
+      | (lastPlay == Passed) && (newSetOfMoves == []) = endgame "Greedy" "Greedy" b
       | otherwise = do
         print newGameState
         playTheGame inactive active newGameState
@@ -235,10 +258,12 @@ main = do
 		if (strn2Strategy a /= DoesNotExist)
 			then putStr ("valid Strategy " ++ a ++ " selected\n")
 		else do
-			putStr "invalid Strategy\n"
-			putStrLn "Valid Strategies are:"
-			putStrLn "  Greedy"
-			exitSuccess
+            putStr "invalid Strategy\n"
+            putStrLn "Valid Strategies are:"
+            putStrLn "  Greedy"
+            putStrLn "  First"
+            putStrLn "  Corner"
+            exitSuccess
 
 	if length argument == 2 
 		then do
@@ -264,18 +289,12 @@ main = do
 				playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
 		else
 			do
-				putStrLn "Invalid number of arguments"
-				putStrLn "Valid Strategies are:"
-				putStrLn "  Greedy"
-				exitSuccess
-		 
---  print initBoard
---  print (firstMove (strn2Chooser s1) initBoard)
-
-
-
---  playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
-
+                putStrLn "Invalid number of arguments"
+                putStrLn "Valid Strategies are:"
+                putStrLn "  Greedy"
+                putStrLn "  First"
+                putStrLn "  Corner"
+                exitSuccess
 
 
 -- BUCKET LIST
@@ -285,14 +304,5 @@ main = do
 2. make choosers able to see the whole set of moves - check
 3. compress moves from findAllMovesAndCaptures - check
 4. print winner if game ends with a set of valid moves
-
-optn:
-
-1. allow strategies that don't always make valid moves;
-       change newPlayedFrom function to be more robust
-       check last play on each itteration of playTheGame
-2.
-
-
 
 -}
