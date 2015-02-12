@@ -3,6 +3,9 @@ module IO where
 import OthelloTools
 import FSM
 import TonysOthelloFunctions
+import System.Environment
+import System.Exit
+
 
 ---------------------From Othello.hs------------------------------
 
@@ -170,48 +173,73 @@ firstMove c (GameState {play = p, theBoard = b}) =
 
 -----------------------------main----------------------------------
 
+playTheGame :: Chooser -> Chooser -> GameState -> IO ()
+playTheGame active inactive (GameState {play = p, theBoard = b})
+      | (lastPlay == Passed) && (newSetOfMoves == []) = do
+                                                      print "Both players passed, game over"
+      | otherwise = do
+        print newGameState
+        playTheGame inactive active newGameState
+
+        where
+        lastPlayer = fst p
+        lastPlay = snd p
+        currentGameState = GameState p b
+        currentPlayer = invertPlayer (fst p)
+        newSetOfMoves = active (GameState p b) (playedBy currentPlayer)
+        newMove = head (unMaybe newSetOfMoves)
+        newGameState = nextGamestate active currentGameState
+
 
 main = do
-  putStrLn "Hello, Welcome to the CPSC449 Othello Assignment"
-  putStrLn "Valid Strategies are:"
-  putStrLn "  Greedy"
+	argument	<-	getArgs
 
-  let inputChecking a =
-	  if (strn2Strategy a /= DoesNotExist)
-        then putStr ("valid Strategy " ++ a ++ " selected\n")
-	    else do
-          putStr "invalid Strategy\n"
-          return () -- why doesnt this quit the execution?
+	putStrLn "Hello, Welcome to the CPSC449 Othello Assignment"
 
-  putStrLn "Please select a black strategy"
-  s1 <- getLine
-  inputChecking s1
+	let inputChecking a =
+		if (strn2Strategy a /= DoesNotExist)
+			then putStr ("valid Strategy " ++ a ++ " selected\n")
+		else do
+			putStr "invalid Strategy\n"
+			putStrLn "Valid Strategies are:"
+			putStrLn "  Greedy"
+			exitSuccess
 
-  putStrLn "Please select a white strategy"
-  s2 <- getLine
-  inputChecking s2
+	if length argument == 2 
+		then do
+			let s1 = (head argument)
+			let s2 = (argument !! 1)
+			inputChecking s1
+			inputChecking s2
+			print initBoard
+			print (firstMove (strn2Chooser s1) initBoard)
+			playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
+	else 
+		if length argument == 0
+			then do
 
-  print initBoard
-  print (firstMove (strn2Chooser s1) initBoard)
+				putStrLn "Please select a black strategy"
+				s1 <- getLine
+				inputChecking s1
+				putStrLn "Please select a white strategy"
+				s2 <- getLine
+				inputChecking s2
+				print initBoard
+				print (firstMove (strn2Chooser s1) initBoard)
+				playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
+		else
+			do
+				putStrLn "Invalid number of arguments"
+				putStrLn "Valid Strategies are:"
+				putStrLn "  Greedy"
+				exitSuccess
+		 
+--  print initBoard
+--  print (firstMove (strn2Chooser s1) initBoard)
 
-  let playTheGame :: Chooser -> Chooser -> GameState -> IO ()
-      playTheGame active inactive (GameState {play = p, theBoard = b})
-        | (lastPlay == Passed) && (newSetOfMoves == []) = do
-                                                        print "Both players passed, game over"
-        | otherwise = do
-          print newGameState
-          playTheGame inactive active newGameState
 
-         where
-          lastPlayer = fst p
-          lastPlay = snd p
-          currentGameState = GameState p b
-          currentPlayer = invertPlayer (fst p)
-          newSetOfMoves = active (GameState p b) (playedBy currentPlayer)
-          newMove = head (unMaybe newSetOfMoves)
-          newGameState = nextGamestate active currentGameState
 
-  playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
+--  playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
 
 
 

@@ -17,7 +17,7 @@ express or implied warranty.
 
 -}
 
--- | The following pragmas are only necessary for the Read class instance of 'GameBoard'
+--  The following pragmas are only necessary for the Read class instance of 'GameBoard'
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverlappingInstances #-}

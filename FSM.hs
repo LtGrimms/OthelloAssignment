@@ -1,3 +1,22 @@
+{- | This module is used for CPSC 449 for the Othello assignment.
+
+You MUST use this file as part of your assignment to deal with boards, 
+cells, etc.  This will may be tested
+by linking your assignment against a modified version of this file.
+
+Do not modify this file.
+
+Copyright: Copyright 2015, Rob Kremer (rkremer@ucalgary.ca), University of Calgary. 
+Permission to use, copy, modify, distribute and sell this software
+and its documentation for any purpose is hereby granted without fee, provided
+that the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation. The University of Calgary makes no representations about the
+suitability of this software for any purpose. It is provided "as is" without
+express or implied warranty.
+
+-}
+
 module FSM where
 import TonysOthelloFunctions (rotateX)
 import OthelloTools
@@ -116,8 +135,8 @@ mapMoves (c,r) 3
 --   if the choosers pick a moves from an uncompressed version. For example if
 --   [[(5,4)(5,5)],[(5,4),(6,4)]] is returned from the findAll function the chooser would only
 --   get one of the captures from a move that should capture two.
-compressAllMovesAndCaptures :: [[(Int,Int)]]
-                            -> [[(Int,Int)]]
+compressAllMovesAndCaptures :: [[(Int,Int)]] -- ^ Takes in the list of moves
+                            -> [[(Int,Int)]] -- ^ Returns the compressed list
 compressAllMovesAndCaptures []     = []
 compressAllMovesAndCaptures (d:[]) = d:[]
 compressAllMovesAndCaptures (a:as) = compress a as : compressAllMovesAndCaptures (modified a as)

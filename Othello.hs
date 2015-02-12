@@ -47,6 +47,7 @@ main' args = do
 	-}
 --taking arguments from command land
     argument	<-	getArgs
+<<<<<<< Updated upstream
 
     let inputChecking' a =
 	    if length argument == 2 -- if the user did not enter any arguments go to interactive mode
@@ -57,8 +58,12 @@ main' args = do
 	            putStrLn s2
 	    else 
 	       putStrLn "interactive mode"
+=======
+	
+>>>>>>> Stashed changes
     let inputChecking a =
-	    if length argument /= 2 -- if the user did not enter any arguments go to interactive mode
+
+	    if length a /= 2 -- if the user did not enter any arguments go to interactive mode
 	        then do 
 	            putStrLn "The number of arguments are incorrect"
 	            putStrLn "  reallyStupidStrategy\n"
@@ -69,11 +74,18 @@ main' args = do
 	            strategy2	<- getLine --getting user input
 	            putStrLn ("The strategies you pick are: " ++ strategy1 ++ " " ++ strategy2)
 	    else 
+			putStrLn (head a)
 	        putStrLn "The correct number of args"
+			
 	        
     inputChecking' argument
     inputChecking argument
+<<<<<<< Updated upstream
     
+=======
+
+
+>>>>>>> Stashed changes
 --seeding random number generator
     g <- getStdGen
     let x = randoms g :: [Int]
