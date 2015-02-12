@@ -47,6 +47,16 @@ main' args = do
 	-}
 --taking arguments from command land
     argument	<-	getArgs
+
+    let inputChecking' a =
+	    if length argument == 2 -- if the user did not enter any arguments go to interactive mode
+	        then do 
+	            let s1 = head argument
+	            let s2 = argument !! 1
+	            putStrLn s1
+	            putStrLn s2
+	    else 
+	       putStrLn "interactive mode"
     let inputChecking a =
 	    if length argument /= 2 -- if the user did not enter any arguments go to interactive mode
 	        then do 
@@ -61,8 +71,9 @@ main' args = do
 	    else 
 	        putStrLn "The correct number of args"
 	        
+    inputChecking' argument
     inputChecking argument
-       
+    
 --seeding random number generator
     g <- getStdGen
     let x = randoms g :: [Int]
@@ -107,6 +118,8 @@ pickFirst :: Chooser -- ^ Takes in a Chooser (which returns a Maybe (Int,Int))
 pickFirst (GameState {play = p, theBoard = b}) c
 	|length (findAllMovesAndCaptures b c) == 0 = []
 	|length (findAllMovesAndCaptures b c) /= 0 = mapJust (head (findAllMovesAndCaptures b c))
+--	|length (findAllMovesAndCaptures (invertBoardPieces b)) == 0 && c == W = []
+--	|length (findAllMovesAndCaptures (invertBoardPieces b)) /= 0 && c == W = mapJust (head (findAllMovesAndCaptures (invertBoardPieces b)))
 
 --	|Random strategy that chooses a random move contained from all valid moves
 randomStrategy :: Int -- ^ Takes in an Int representing the random number
@@ -114,6 +127,8 @@ randomStrategy :: Int -- ^ Takes in an Int representing the random number
 randomStrategy random (GameState {play = p, theBoard = b}) c
 	|length (findAllMovesAndCaptures b c) == 0 = []
 	|length (findAllMovesAndCaptures b c) /= 0 = mapJust (pickRandom (findAllMovesAndCaptures b c) random)
+--	|length (findAllMovesAndCaptures (invertBoardPieces b)) == 0 && c == W = []
+--	|length (findAllMovesAndCaptures (invertBoardPieces b)) /= 0 && c == W = mapJust (pickRandom (findAllMovesAndCaptures (invertBoardPieces b)) random)
 
 
 
@@ -326,10 +341,9 @@ flipList :: Board -- ^ Takes in the current board
 		-> [(Int,Int)] -- ^ Takes in a list of coordinates to flip
 		-> Cell -- ^ Takes in a player
 		-> Board -- ^ Returns the new board
-flipList a [] _ = a
 flipList a (x:xs) player = flipList (flip' a x player) xs player
 
 --	|Have to convert between the coordinates returned by findMovesAndCaptures in order to use the replace function
 convert :: (Int,Int) -- ^ Takes in a pair which represents the initial cooridnates
 		-> (Int,Int) -- ^ Returns the converted pair
-convert x = (((fst x) - 1), (abs ((snd x) - 8)))
+convert x = (((snd x) - 1), (abs ((fst x) - 8)))
