@@ -38,7 +38,7 @@ findMovesAndCaptures' (x:xs) = movesAndCapturesOnRow (succ (length xs)) (runFSML
 
 findAllMovesAndCaptures :: Board -- ^ The board to find moves on
                         -> Cell  -- ^ The cell of the player whose moves we are searching for
-						-> [[(Int, Int)]] -- ^ Returns the list of moves and captures
+			-> [[(Int, Int)]] -- ^ Returns the list of moves and captures
 findAllMovesAndCaptures b c
   | c == W = compress (findAllMovesAndCaptures' (invertBoardPieces b))
   | otherwise = compress (findAllMovesAndCaptures' b)
@@ -245,22 +245,3 @@ runFSML  :: [Cell]             -- the row to be tested
 runFSML row = fsmMemManage (foldl fsml (-1, (0,0), -1, (0,0), []) row)
 
 
--- Bucket List
-{-
-1. test and fix map moves functions, possible sorce of error in findAllMovesAndCaptures'
-*IO> board4
-_ _ _ _ _ _ _ _
-|_|_|_|_|_|_|_|_|
-|_|_|_|_|_|_|_|_|
-|_|_|_|_|_|_|_|_|
-|_|_|_|W|B|_|_|_|
-|_|_|_|W|W|_|_|_|
-|_|_|_|_|B|_|_|_|
-|_|_|_|_|_|_|_|_|
-|_|_|_|_|_|_|_|_|
-
-*IO> findAllMovesAndCaptures board4 B
-[[(3,5),(4,5)],[(3,3),(4,4)],[(2,5),(3,4)]]
-                                /\    /\
-                            NOT THE RIGHT MOVES!
--}
