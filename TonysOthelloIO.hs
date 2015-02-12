@@ -64,6 +64,41 @@ mapJust (x:xs) = Just (fst x, snd x) : mapJust xs
 
 
 
+-------------------FirstAvailable----------------------------------------
+firstAvailable_st :: Chooser
+firstAvailable_st (GameState {play = p , theBoard =b})  c = mapJust(firstAvailable (findAllMovesAndCaptures b c))
+
+firstAvailable :: [[(Int,Int)]] -> ([(Int,Int)])
+firstAvailable moves = (head (moves))
+-------------------------------------------------------------------------
+
+
+------------------corner--------------------------------------------------
+corner_st :: Chooser
+corner_st (GameState {play = p , theBoard =b})  c = mapJust( corner (findAllMovesAndCaptures b c))
+
+mysubtract :: (Int,Int) -> (Int, Int)
+mysubtract (a,b) = (a-3,b-3)
+
+
+mysquare :: (Int,Int) -> Int
+mysquare (a,b) = a^2+b^2
+
+mycalculator :: [(Int,Int)] -> (Int,[(Int,Int)]) -> (Int,[(Int,Int)])
+mycalculator moves ((-1),[]) = (mysquare (mysubtract (head(moves))),moves)
+mycalculator moves (s,x) = if( mysquare(mysubtract(head(moves))) >=  s)
+                then (mysquare(mysubtract(head(moves))),moves)
+                else (s,x)
+
+
+corner :: [[(Int,Int)]] -> ([(Int, Int)])
+corner x = snd(foldr mycalculator ((-1),[]) x )
+
+
+--------------------------------------------------------------------------
+
+
+
 ----------------Strategy Names and Functions----------------------
 
 -- | these are the valid strategies
