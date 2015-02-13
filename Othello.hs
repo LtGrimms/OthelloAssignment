@@ -342,24 +342,6 @@ main = do
                 exitSuccess
 
 
-{- | This module is used for CPSC 449 for the Othello assignment.
-
-You MUST use this file as part of your assignment to deal with boards, 
-cells, etc.  This will may be tested
-by linking your assignment against a modified version of this file.
-
-Do not modify this file.
-
-Copyright: Copyright 2015, Rob Kremer (rkremer@ucalgary.ca), University of Calgary. 
-Permission to use, copy, modify, distribute and sell this software
-and its documentation for any purpose is hereby granted without fee, provided
-that the above copyright notice appear in all copies and that both that
-copyright notice and this permission notice appear in supporting
-documentation. The University of Calgary makes no representations about the
-suitability of this software for any purpose. It is provided "as is" without
-express or implied warranty.
-
--}
 
 ------------------------Running FSM on a board-----------------------------
 
