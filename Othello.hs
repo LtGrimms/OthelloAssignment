@@ -346,8 +346,7 @@ express or implied warranty.
 
 ------------------------Running FSM on a board-----------------------------
 
---validMovesOnBoard :: Board -> [(Int, Int)]
--- can't write this yet since we will need the unrotate function
+
 
 -- | findMoves takes a board and returns only the squares to place pieces
 --   This is currently not being used by the main program
