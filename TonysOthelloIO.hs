@@ -100,8 +100,6 @@ corner x = snd(foldr mycalculator ((-1),[]) x )
 
 --------------------------------------------------------------------------
 
-
-
 ----------------Strategy Names and Functions----------------------
 
 -- | these are the valid strategies
@@ -213,8 +211,9 @@ firstMove c (GameState {play = p, theBoard = b}) =
 -- | endgame will determine the winner and print out an endgame message
 endgame :: String -> String -> Board -> IO ()
 endgame c1 c2 b
-  | countBlackPieces b > countWhitePieces b = putStrLn ("Black wins! Black (" ++ c1 ++ ") : " ++ show (countBlackPieces b) ++  "White (" ++ c2 ++ ") :" ++ show (countWhitePieces b))
-  | otherwise                       = putStrLn ("White wins! Black (" ++ c1 ++ ") : " ++ show (countBlackPieces b) ++  "White (" ++ c2 ++ ") :" ++ show (countWhitePieces b))
+  | countBlackPieces b > countWhitePieces b = putStrLn ("Black wins! Black (" ++ c1 ++ ") : " ++ show (countBlackPieces b) ++  " White (" ++ c2 ++ ") :" ++ show (countWhitePieces b))
+  | countBlackPieces b == countWhitePieces b = putStrLn ("Tied!, Black (" ++ c1 ++ ") : " ++ show (countBlackPieces b) ++  " White (" ++ c2 ++ ") :" ++ show (countWhitePieces b))
+  | otherwise                       = putStrLn ("White wins! Black (" ++ c1 ++ ") : " ++ show (countBlackPieces b) ++  " White (" ++ c2 ++ ") :" ++ show (countWhitePieces b))
 
 -- | counts the black pieces on a board
 countBlackPieces :: Board -> Int
@@ -223,8 +222,8 @@ countBlackPieces (x:xs) = (countBlack x) + (countBlackPieces xs)
   where countBlack :: [Cell] -> Int
         countBlack [] = 0
         countBlack (x:xs)
-         | x == B = 1
-         | otherwise = 0
+         | x == B = 1 + countBlack xs
+         | otherwise = 0 + countBlack xs
 
 -- | counts the white pieces on a board
 countWhitePieces :: Board -> Int
@@ -232,9 +231,12 @@ countWhitePieces b = countBlackPieces (invertBoardPieces b)
 
 -----------------------------main----------------------------------
 
-playTheGame :: Chooser -> Chooser -> GameState -> IO ()
+playTheGame :: Strategy -> Strategy -> GameState -> IO ()
 playTheGame active inactive (GameState {play = p, theBoard = b})
-      | (lastPlay == Passed) && (newSetOfMoves == []) = endgame "Greedy" "Greedy" b
+      | (lastPlay == Passed) && (newSetOfMoves == []) = do
+           if (lastPlayer == Black)
+             then endgame strat2String strat1String b
+           else endgame strat1String strat2String b
       | otherwise = do
         print newGameState
         playTheGame inactive active newGameState
@@ -244,17 +246,23 @@ playTheGame active inactive (GameState {play = p, theBoard = b})
         lastPlay = snd p
         currentGameState = GameState p b
         currentPlayer = invertPlayer (fst p)
-        newSetOfMoves = active (GameState p b) (playedBy currentPlayer)
+        newSetOfMoves = (strategy2Chooser active) (GameState p b) (playedBy currentPlayer)
         newMove = head (unMaybe newSetOfMoves)
-        newGameState = nextGamestate active currentGameState
+        newGameState = nextGamestate (strategy2Chooser active) currentGameState
+        strat1String = strategy2Strn active
+        strat2String = strategy2Strn inactive
 
 
 main = do
-	argument	<-	getArgs
+    argument	<-	getArgs
 
-	putStrLn "Hello, Welcome to the CPSC449 Othello Assignment"
+    putStrLn "Hello, Welcome to the CPSC449 Othello Assignment"
+    putStrLn "Valid Strategies are:"
+    putStrLn "  Greedy"
+    putStrLn "  First"
+    putStrLn "  Corner"
 
-	let inputChecking a =
+    let inputChecking a =
 		if (strn2Strategy a /= DoesNotExist)
 			then putStr ("valid Strategy " ++ a ++ " selected\n")
 		else do
@@ -265,28 +273,28 @@ main = do
             putStrLn "  Corner"
             exitSuccess
 
-	if length argument == 2 
+    if length argument == 2
 		then do
-			let s1 = (head argument)
-			let s2 = (argument !! 1)
-			inputChecking s1
-			inputChecking s2
-			print initBoard
-			print (firstMove (strn2Chooser s1) initBoard)
-			playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
-	else 
+            let s1 = (head argument)
+            let s2 = (argument !! 1)
+            inputChecking s1
+            inputChecking s2
+            print initBoard
+            print (firstMove (strn2Chooser s1) initBoard)
+            playTheGame (strn2Strategy s2) (strn2Strategy s1) (firstMove (strn2Chooser s1) initBoard)
+    else
 		if length argument == 0
 			then do
 
-				putStrLn "Please select a black strategy"
-				s1 <- getLine
-				inputChecking s1
-				putStrLn "Please select a white strategy"
-				s2 <- getLine
-				inputChecking s2
-				print initBoard
-				print (firstMove (strn2Chooser s1) initBoard)
-				playTheGame (strn2Chooser s2) (strn2Chooser s1) (firstMove (strn2Chooser s1) initBoard)
+                putStrLn "Please select a black strategy"
+                s1 <- getLine
+                inputChecking s1
+                putStrLn "Please select a white strategy"
+                s2 <- getLine
+                inputChecking s2
+                print initBoard
+                print (firstMove (strn2Chooser s1) initBoard)
+                playTheGame (strn2Strategy s2) (strn2Strategy s1) (firstMove (strn2Chooser s1) initBoard)
 		else
 			do
                 putStrLn "Invalid number of arguments"
