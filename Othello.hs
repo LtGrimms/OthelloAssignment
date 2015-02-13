@@ -641,12 +641,3 @@ rotate45CW  [[a8, b8, c8, d8, e8, f8, g8, h8],
              [h1]]       
 
 
--- BUCKET LIST
-{-
-
-1. make the program print strategies and quit when invalid strat is input - check
-2. make choosers able to see the whole set of moves - check
-3. compress moves from findAllMovesAndCaptures - check
-4. print winner if game ends with a set of valid moves
-
--}
