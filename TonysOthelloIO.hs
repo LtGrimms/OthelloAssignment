@@ -79,23 +79,35 @@ firstAvailable moves
 corner_st :: Chooser
 corner_st (GameState {play = p , theBoard =b})  c = mapJust( corner (findAllMovesAndCaptures b c))
 
-mysubtract :: (Int,Int) -> (Int, Int)
-mysubtract (a,b) = (a-4,b-4)
+mysubtract_1  (a,b) = (a-1,b-1) 
+mysubtract_2 :: (Int,Int) -> (Int, Int) 
+mysubtract_2  (a,b) = (a-1,b-8) 
+mysubtract_3 :: (Int,Int) -> (Int, Int) 
+mysubtract_3  (a,b) = (a-8,b-1) 
+mysubtract_4 :: (Int,Int) -> (Int, Int) 
+mysubtract_4  (a,b) = (a-8,b-8) 
+mysquare :: (Int,Int) -> Int 
+mysquare (a,b) = a^2+b^2 
 
+{- get 4 distances between cell postion and 4 corner position(1,1)(1,8)(8,1)(8,8)-}
+getAllDistance :: [(Int,Int)] -> [Int] 
+getAllDistance a = [mysquare(mysubtract_1(head(a))),mysquare(mysubtract_2(head(a))),mysquare(mysubtract_3(head(a))),mysquare(mysubtract_4(head(a)))] 
 
-mysquare :: (Int,Int) -> Int
-mysquare (a,b) = a^2+b^2
+{-find smallest distance among above 4 distances-}
+findSmall :: [Int] -> Int
+findSmall x = minimum x
 
-mycalculator :: [(Int,Int)] -> (Int,[(Int,Int)]) -> (Int,[(Int,Int)])
-mycalculator moves ((-1),[]) = (mysquare (mysubtract (head(moves))),moves)
-mycalculator moves (s,x) = if( mysquare(mysubtract(head(moves))) >=  s)
-                then (mysquare(mysubtract(head(moves))),moves)
-                else (s,x)
+{-make array which contain smallest distance and list-}
+makeArr :: [(Int,Int)] -> (Int,[(Int,Int)])
+makeArr x = (findSmall(getAllDistance x) , x )
 
+{-find all lists' smallest distance and compare which distance is smallest-}
+mycalculator :: [(Int, Int)] -> (Int,[(Int,Int)]) -> (Int,[(Int,Int)])
+mycalculator moves ((-1),[ ]) = makeArr moves
+mycalculator moves (s,x) = if(fst(makeArr moves)>=s) then (s,x) else makeArr moves
 
-
-corner :: [[(Int,Int)]] -> ([(Int, Int)])
-corner x = snd(foldr mycalculator ((-1),[]) x )
+corner :: [[(Int,Int)]] -> ([(Int,Int)])
+corner x = snd(foldr mycalculator ((-1),[ ]) x)
 
 
 --------------------------------------------------------------------------
