@@ -160,6 +160,11 @@ putStrategy s = putStr (strategy2Strn s)
 ---------------------Playing the game functions--------------------
 ----------------------Don't put IO in these------------------------
 
+-- | Have to convert between the coordinates returned by findMovesAndCaptures in order to use the rep
+convert :: (Int,Int) -- ^ Takes in a pair which represents the initial cooridnates
+        -> (Int,Int) -- ^ Returns the converted pair
+convert x = (((fst x) - 1), (abs ((snd x) - 8)))
+
 -- | this will palce an individual piece on a board
 placePiece :: (Int, Int)  -- ^ Place to put the piece (in Std coordinates)
            -> Board       -- ^ Current board to place Piece
@@ -189,7 +194,7 @@ playedBy Black = B
 newPlayedFrom :: [Maybe (Int, Int)] -- ^ Takes in a pair of Maybe Ints
 				-> Played -- ^ Returns whether or not the move is a pass or play
 newPlayedFrom [] = Passed
-newPlayedFrom moves = Played (maybe (0,0) (\x -> x) (head moves))
+newPlayedFrom moves = Played (convert ((maybe (0,0) (\x -> x) (head moves))))
 
 
 -- | Since moves are of type [Maybe (Int, Int)] we need sometimes need to remove the
@@ -271,7 +276,7 @@ playTheGame active inactive (GameState {play = p, theBoard = b})
         strat1String = strategy2Strn active
         strat2String = strategy2Strn inactive
 
-
+-- | this is the main function
 main = do
     argument	<-	getArgs
 
