@@ -10,8 +10,7 @@ import System.Exit
 
 ---------------------From Othello.hs------------------------------
 
-{- I needed to import these functions so that everything ran properly,
-I didnt want to change Othello.hs to avoid merge conflicts -}
+
 
 {- | This is the type for all player functions.  A player strategy function takes a
 board and returns a point (Int,Int) that it chooses -- this should be a legal move.
