@@ -1,6 +1,12 @@
 {- |
 Module		: Othello
 Description 	: This is our submission for CPSC449 A1 
+
+Authors		: Justin Chu
+		  Anthony Cridland
+		  Desmond Larsen-Rosner
+		  Jason Law
+		  Jihyun Kim
 -}
 module Othello where
 import OthelloTools
