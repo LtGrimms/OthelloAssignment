@@ -261,6 +261,19 @@ playTheGame active inactive (GameState {play = p, theBoard = b})
            if (lastPlayer == Black)
              then endgame strat2String strat1String b
            else endgame strat1String strat2String b
+      | (lastPlay `elem` [Goofed (a, b) | a <- [0..8], b <- [0..8]]) = do
+        print currentGameState
+        putStrLn "Game Over"
+        if (lastPlayer == Black)
+          then endgame strat2String strat1String b
+        else endgame strat1String strat2String b
+      | (lastPlay == IllegalPass) = do
+        print currentGameState
+        putStrLn "Illegal pass, Game Over"
+        if (lastPlayer == Black)
+          then endgame strat2String strat1String b
+        else endgame strat1String strat2String b
+        
       | otherwise = do
         print newGameState
         playTheGame inactive active newGameState
