@@ -80,6 +80,7 @@ firstAvailable moves
 corner_st :: Chooser
 corner_st (GameState {play = p , theBoard =b})  c = mapJust( corner (findAllMovesAndCaptures b c))
 -- | Helper function for corner strategy
+mysubtract_1 :: (Int,Int) -> (Int,Int)
 mysubtract_1  (a,b) = (a-1,b-1) 
 -- | Helper function for corner strategy
 mysubtract_2 :: (Int,Int) -> (Int, Int) 
